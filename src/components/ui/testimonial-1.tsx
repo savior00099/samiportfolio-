@@ -35,15 +35,15 @@ export default function Testimonial1() {
 
   const stats: StatItem[] = [
     {
-      value: 3.00,
+      value: 3.62,
       decimals: 2,
-      suffix: "/5.0",
+      suffix: "/4.0",
       label: "Current GPA",
       href: "/resume",
       cta: "View Resume",
     },
     {
-      value: 14,
+      value: 20,
       decimals: 0,
       suffix: "+",
       label: "Projects Completed",
@@ -51,9 +51,9 @@ export default function Testimonial1() {
       cta: "View Projects",
     },
     {
-      value: 5,
+      value: 2,
       decimals: 0,
-      suffix: "+ Months",
+      suffix: " Years",
       label: "Professional Exp",
       href: "/experience",
       cta: "Explore Career",

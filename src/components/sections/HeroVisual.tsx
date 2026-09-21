@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
-import { Github, Mail, Instagram, ArrowDown, ArrowDownRight, Bot, Zap, ExternalLink, MessageSquare } from 'lucide-react';
+import { Github, Linkedin, Instagram, ArrowDown, ArrowDownRight, Bot, Zap, ExternalLink, MessageSquare } from 'lucide-react';
 import { portfolioData } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
@@ -142,7 +142,7 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
         />
       </div>
 
-      <main className="relative flex-1 flex flex-col justify-center pt-40 pb-20 z-10">
+      <main className="relative flex-1 flex flex-col justify-center pt-40 pb-20 z-10 max-w-[105rem] w-full mx-auto">
         <div className="flex relative gap-4 px-6 md:items-center w-full flex-col justify-center">
 
           {/* Follow-Cursor Tooltip */}
@@ -176,7 +176,7 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-[10px] md:text-xs text-muted-foreground text-start md:text-right leading-relaxed max-w-[200px] md:max-w-[220px] font-medium uppercase tracking-[0.2em]"
             >
-              Hi, I'm {personal.name}. I'm learning to build things with code, one project at a time.
+              Hi, I'm {personal.name}. I build scalable systems powered by intelligence.
             </motion.p>
             <div className="relative">
               <div ref={githubRef} className="absolute -top-4 right-0 md:right-2 text-primary/60 hover:text-primary z-20 opacity-0">
@@ -194,21 +194,21 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                 className="text-[clamp(3rem,11vw,13rem)] font-black leading-[0.85] tracking-tighter text-shiny will-change-transform px-4"
               >
-                AI
+                AI & DATA
               </motion.h1>
             </div>
           </div>
 
-          {/* Line 2: ENGI [ICON] NEER */}
+          {/* Line 2: SOFT [ICON] WARE */}
           <div className="md:flex gap-8 items-center relative">
             <div className="relative">
               <div ref={linkedinRef} className="absolute -top-8 left-4 text-primary/60 hover:text-primary z-20 opacity-0">
                 <a
-                  href={`mailto:${personal.email}`}
+                  href={personal.socialLinks.find(s => s.platform === 'LinkedIn')?.url}
                   target="_blank"
                   className="block"
                 >
-                  <Mail size={32} />
+                  <Linkedin size={32} />
                 </a>
               </div>
               <div ref={instagramRef} className="absolute -bottom-12 right-24 md:right-36 text-primary/60 hover:text-primary z-20 opacity-0">
@@ -226,33 +226,33 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
                 transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                 className="text-[clamp(3rem,11vw,13rem)] md:flex items-center font-black leading-[0.85] tracking-tighter text-shiny will-change-transform px-4"
               >
-                <span className="">ENGI</span>
-                <div 
-                  ref={zapRef} 
+                <span className="">SOFT</span>
+                <div
+                  ref={zapRef}
                   className="hidden lg:block mx-[0.05em] relative cursor-pointer group"
-                  onClick={() => window.open('https://github.com/savior00099', '_blank')}
+                  onClick={() => window.open('https://arfazrllworkspace.vercel.app/', '_blank')}
                   onMouseEnter={(e) => setTooltip({ show: true, text: "Go to Workspace", icon: 'zap', x: e.clientX, y: e.clientY })}
                   onMouseMove={(e) => setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY }))}
                   onMouseLeave={() => setTooltip(prev => ({ ...prev, show: false }))}
                 >
                   <Zap className="w-[0.8em] h-[0.8em] text-sky-400 group-hover:text-sky-300 transition-colors" strokeWidth={1.5} />
                 </div>
-                <div 
-                  ref={zapSmallRef} 
+                <div
+                  ref={zapSmallRef}
                   className="block lg:hidden mx-[0.02em] relative cursor-pointer group"
-                  onClick={() => window.open('https://github.com/savior00099', '_blank')}
+                  onClick={() => window.open('https://arfazrllworkspace.vercel.app/', '_blank')}
                   onMouseEnter={(e) => setTooltip({ show: true, text: "Go to Workspace", icon: 'zap', x: e.clientX, y: e.clientY })}
                   onMouseMove={(e) => setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY }))}
                   onMouseLeave={() => setTooltip(prev => ({ ...prev, show: false }))}
                 >
                   <Zap className="w-[0.8em] h-[0.8em] text-sky-400 group-hover:text-sky-300 transition-colors" strokeWidth={2} />
                 </div>
-                <span className="">NEER</span>
+                <span className="">WARE</span>
               </motion.h1>
             </div>
           </div>
 
-          {/* Line 3: & DA [ICON] TA */}
+          {/* Line 3: EN [ICON] GINEER */}
           <div className="md:flex gap-8 items-center relative">
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
@@ -260,10 +260,9 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
               transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="text-[clamp(3rem,11vw,13rem)] md:flex items-center font-black leading-[0.85] tracking-tighter text-shiny will-change-transform px-4"
             >
-              <span className="text-muted-foreground/50 mr-[0.15em]">&</span>
-              <span className="">DA</span>
-              <div 
-                ref={botRef} 
+              <span className="">EN</span>
+              <div
+                ref={botRef}
                 className="mx-[0.05em] relative cursor-pointer group"
                 onClick={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
@@ -277,19 +276,7 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
               >
                 <Bot className="w-[0.85em] h-[0.85em] text-yellow-500 fill-yellow-500/10 group-hover:text-yellow-400 group-hover:fill-yellow-400/20 transition-colors" />
               </div>
-              <span className="">TA</span>
-            </motion.h1>
-          </div>
-
-          {/* Line 4: SCIENTIST */}
-          <div className="md:flex gap-8 items-center relative">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={isExiting ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[clamp(3rem,11vw,13rem)] font-black leading-[0.85] tracking-tighter text-shiny will-change-transform px-4"
-            >
-              SCIENTIST
+              <span className="">GINEER</span>
             </motion.h1>
 
             <motion.p
@@ -308,7 +295,7 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
           <div className="flex items-center gap-6">
             <Separator className="flex-1 h-[1px] bg-foreground/10 hidden md:block" />
             <div className="text-[10px] md:text-xs whitespace-nowrap font-bold tracking-[0.3em] text-muted-foreground uppercase">
-              DHAKA, BD — 2026
+              JAKARTA, ID — 2026
             </div>
             <Link
               href="/resume"
@@ -327,53 +314,51 @@ export function HeroVisual({ isExiting = false }: { isExiting?: boolean }) {
             </Link>
           </div>
         </div>
-
-
-
-        {/* Award/Badge Vertical - MOVED TO LEFT */}
-        <div
-          className="absolute left-0 top-1/2 z-50 hidden md:flex items-center transform -translate-y-1/2 group/container"
-          onMouseEnter={() => setShowProfile(true)}
-          onMouseLeave={() => setShowProfile(false)}
-        >
-          {/* The Badge Trigger */}
-          <div className="relative z-50">
-            <motion.div
-              whileHover={{ x: 10 }}
-              className="bg-white text-black py-10 px-4 text-[10px] font-black uppercase tracking-[0.5em] shadow-2xl rounded-r-3xl border-r border-y border-zinc-200 cursor-pointer"
-            >
-              <span className="rotate-0 [writing-mode:vertical-rl]">
-                AVAILABLE FOR OPPORTUNITY
-              </span>
-            </motion.div>
-          </div>
-
-          {/* Profile Card Sidebar/Drawer Effect - Connected to avoid gap */}
-          <AnimatePresence>
-            {showProfile && (
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                className="pl-4 pointer-events-auto"
-                style={{ width: 'max-content' }}
-              >
-                <ProfileCard
-                  name={personal.name}
-                  title="AI Engineer & Software Engineer"
-                  description={`${personal.name} is a dedicated AI & Software Engineer focused on building scalable, intelligent systems and robust software architectures. He specializes in bridging technical innovation with high-performance execution to deliver meaningful and impactful digital solutions.`}
-                  imageUrl={personal.avatar}
-                  githubUrl={personal.socialLinks.find(s => s.platform === 'GitHub')?.url}
-                  linkedinUrl={personal.socialLinks.find(s => s.platform === 'LinkedIn')?.url}
-                  instagramUrl={personal.socialLinks.find(s => s.platform === 'Instagram')?.url}
-                  className="!max-w-4xl scale-[0.8] origin-left"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </main>
+
+      {/* Award/Badge Vertical - MOVED TO LEFT */}
+      <div
+        className="absolute left-0 top-1/2 z-50 hidden md:flex items-center transform -translate-y-1/2 group/container"
+        onMouseEnter={() => setShowProfile(true)}
+        onMouseLeave={() => setShowProfile(false)}
+      >
+        {/* The Badge Trigger */}
+        <div className="relative z-50">
+          <motion.div
+            whileHover={{ x: 10 }}
+            className="bg-white text-black py-10 px-4 text-[10px] font-black uppercase tracking-[0.5em] shadow-2xl rounded-r-3xl border-r border-y border-zinc-200 cursor-pointer"
+          >
+            <span className="rotate-0 [writing-mode:vertical-rl]">
+              AVAILABLE FOR OPPORTUNITY
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Profile Card Sidebar/Drawer Effect - Connected to avoid gap */}
+        <AnimatePresence>
+          {showProfile && (
+            <motion.div
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -20, opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="pl-4 pointer-events-auto"
+              style={{ width: 'max-content' }}
+            >
+              <ProfileCard
+                name={personal.name}
+                title="AI Engineer & Software Engineer"
+                description={`${personal.name} is a dedicated AI & Software Engineer focused on building scalable, intelligent systems and robust software architectures. He specializes in bridging technical innovation with high-performance execution to deliver meaningful and impactful digital solutions.`}
+                imageUrl={personal.avatar}
+                githubUrl={personal.socialLinks.find(s => s.platform === 'GitHub')?.url}
+                linkedinUrl={personal.socialLinks.find(s => s.platform === 'LinkedIn')?.url}
+                instagramUrl={personal.socialLinks.find(s => s.platform === 'Instagram')?.url}
+                className="!max-w-4xl scale-[0.8] origin-left"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }

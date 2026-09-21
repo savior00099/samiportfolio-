@@ -50,7 +50,7 @@ function buildSystemPrompt(locale: string = 'en'): string {
 - Email: ${personal.email}
 - Languages: ${(personal.languages ?? []).map((l: any) => `${l.name} (${l.level})`).join(', ')}
 - GitHub: ${(personal.socialLinks ?? []).find((s: any) => s.platform === 'GitHub')?.url ?? ''}
-- Instagram: ${(personal.socialLinks ?? []).find((s: any) => s.platform === 'Instagram')?.url ?? ''}
+- LinkedIn: ${(personal.socialLinks ?? []).find((s: any) => s.platform === 'LinkedIn')?.url ?? ''}
 
 ## Projects (${(projects ?? []).length} total)
 ${projectList}
@@ -59,16 +59,16 @@ ${projectList}
 ${expList || 'See portfolio for details.'}
 
 ## Education
-${eduList || 'Currently pursuing studies with a focus on Science.'}
+${eduList || 'Information Technology, Telkom University.'}
 
 ## Technical Skills
-${skillList || 'Python, HTML, CSS, Java.'}
+${skillList || 'AI, Machine Learning, Full Stack Development, Blockchain.'}
 
 ## Soft Skills
-${softSkillList || 'Fast Learning, Problem Solving, Collaboration.'}
+${softSkillList || 'Leadership, Communication, Problem Solving.'}
 
 ## Tools & Technologies
-${toolList || 'VS Code, GitHub.'}
+${toolList || 'VS Code, Docker, GitHub, Figma.'}
 
 ## Achievements & Certifications
 ${achievementList || 'See portfolio for details.'}

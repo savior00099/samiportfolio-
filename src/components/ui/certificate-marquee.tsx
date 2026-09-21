@@ -6,8 +6,18 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
-// No certificates yet — add paths here (matching files placed in /public/certificate) once available.
-const certificates: string[] = [];
+const certificates = [
+  "/certificate/Data Analytics on Google Cloud.webp",
+  "/certificate/Deep Learning Beginner.webp",
+  "/certificate/Docker, Kubernetes dan DevOps.webp",
+  "/certificate/Fullstack Programming Untuk Pemula.webp",
+  "/certificate/Introduction to Generative AI.webp",
+  "/certificate/Machine Learning Foundations.webp",
+  "/certificate/Mastering Smart Contract.webp",
+  "/certificate/Started with Databases.webp",
+  "/certificate/Supervised Machine Learning Regression and Classification.webp",
+  "/certificate/elevAIte with Dicoding Program 2025.webp",
+];
 
 function ScrambleButton({ href }: { href: string }) {
   const [displayText, setDisplayText] = useState("View All Achievements");
@@ -65,11 +75,11 @@ type ColumnProps = {
 const Column = ({ images, y }: ColumnProps) => {
   return (
     <motion.div
-      className="relative -top-[45%] flex h-full w-1/3 min-w-[250px] flex-col gap-[2vw] md:gap-[3vw] first:top-[-45%] [&:nth-child(2)]:top-[-95%] [&:nth-child(3)]:top-[-65%] will-change-transform"
+      className="relative -top-[45%] flex h-full w-1/3 min-w-[250px] flex-col gap-4 md:gap-6 first:top-[-45%] [&:nth-child(2)]:top-[-95%] [&:nth-child(3)]:top-[-65%] will-change-transform"
       style={{ y, translateZ: 0 }}
     >
       {images.map((src, i) => (
-        <div key={i} className="relative w-full overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-white/10" style={{ paddingTop: '75%' }}>
+        <div key={i} className="relative w-full overflow-hidden rounded-none bg-zinc-100 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-white/10" style={{ paddingTop: '75%' }}>
           <Image
             src={src}
             alt={`Certificate ${i}`}
@@ -151,10 +161,10 @@ export function CertificateShowcase() {
       </div>
 
       {/* Parallax Gallery - Reduced to 3 columns with margins on sides */}
-      <div className="w-full max-w-[1600px] mx-auto px-4 md:px-16 lg:px-24">
+      <div className="w-full max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">
         <div
           ref={gallery}
-          className="relative box-border flex h-[100vh] md:h-[130vh] gap-[2vw] md:gap-[3vw] overflow-hidden rounded-3xl"
+          className="relative box-border flex h-[100vh] md:h-[130vh] gap-4 md:gap-6 overflow-hidden rounded-none"
         >
           {/* Fill each column with more images so they don't run out during the scroll */}
           <Column images={[certificates[0], certificates[1], certificates[2], certificates[3], certificates[4], certificates[5]]} y={y} />

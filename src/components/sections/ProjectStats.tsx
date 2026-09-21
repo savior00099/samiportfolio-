@@ -1,30 +1,25 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Code2, Award, Sparkles, Clock } from 'lucide-react';
+import { Code2, Award, Sparkles, TrendingUp } from 'lucide-react';
 import { portfolioData } from '@/data/portfolio';
 import { Counter } from '@/components/ui/Counter';
 
-// Calculate metrics from portfolio data.
-// Headline "Projects Completed" and "Tech & Tools" counts include the full
-// body of work (experiments, scripts, and smaller builds) beyond just the
-// featured project cards shown in this portfolio.
+// Calculate metrics from portfolio data
 const calculateMetrics = () => {
-    const totalProjects = Math.max(portfolioData.projects?.length || 0, 20);
+    const totalProjects = portfolioData.projects?.length || 0;
     const completedProjects = portfolioData.projects?.filter(p => p.status === 'completed').length || 0;
     const totalTechStack = portfolioData.techStack?.length || 0;
     const totalTools = portfolioData.tools?.length || 0;
-    const techCount = Math.max(totalTechStack + totalTools, 34);
 
-    // Hands-on, applied/professional experience — distinct from the broader
-    // multi-year self-directed learning journey described elsewhere.
-    const monthsExperience = 5;
+    // Calculate years of experience (assuming earliest project start date)
+    const yearsExp = 2; // Hardcoded based on resume/experience
 
     return {
         projects: totalProjects,
         completed: completedProjects,
-        techCount,
-        monthsExperience,
+        techCount: totalTechStack + totalTools,
+        yearsExp,
         // Creative metrics
         impactScore: '12+', // GitHub stars, downloads, or impact metric
         satisfaction: '98%'   // Client/user satisfaction rate
@@ -105,19 +100,19 @@ export function ProjectStats({ isLowPowerMode }: { isLowPowerMode?: boolean }) {
     const stats = [
         {
             value: `${metrics.projects}+`,
-            label: 'Projects Completed',
+            label: 'Projects Built',
             icon: <Code2 className="w-6 h-6 text-primary" />,
             gradient: 'rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3)'
         },
         {
-            value: `${metrics.monthsExperience}+`,
-            label: 'Months Experience',
-            icon: <Clock className="w-6 h-6 text-emerald-500" />,
+            value: `${metrics.yearsExp}+`,
+            label: 'Years Experience',
+            icon: <TrendingUp className="w-6 h-6 text-emerald-500" />,
             gradient: 'rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.3), rgba(16, 185, 129, 0.3)'
         },
         {
             value: `${metrics.techCount}+`,
-            label: 'Tech & Tools',
+            label: 'Tech Stack',
             icon: <Code2 className="w-6 h-6 text-violet-500" />,
             gradient: 'rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3), rgba(139, 92, 246, 0.3)'
         },

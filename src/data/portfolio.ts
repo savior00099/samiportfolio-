@@ -503,8 +503,6 @@ export const portfolioData: PortfolioData = {
             endDate: '2025-12-31',
             isOngoing: false,
             gpa: '3.00',
-            batch: 'HSC 2025',
-            image: '/education/kazi-azim-uddin-college-1.png',
             activities: [
                 'Developed a strong analytical foundation in Mathematics, Physics, and ICT',
             ],
@@ -521,8 +519,6 @@ export const portfolioData: PortfolioData = {
             endDate: '2023-12-31',
             isOngoing: false,
             gpa: '4.61',
-            batch: 'SSC 2023',
-            image: '/education/valum-ataur-rahman-khan-school.png',
             activities: [
                 'Developed a strong foundation in Mathematics, Physics, and ICT',
             ],

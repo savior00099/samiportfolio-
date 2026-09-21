@@ -14,7 +14,7 @@ export const ParallaxScrollFeatureSection = () => {
             title: "Intelligence Systems",
             subtitle: "AI & DATA SCIENCE",
             description: "Specializing in architecting autonomous systems and intelligence-driven platforms. From fine-tuning LLMs and engineering RAG architectures to developing deep learning models for Computer Vision and NLP.",
-            imageUrl: '/feature/feature1.jpg',
+            imageUrl: '/feature/feature1.webp',
             reverse: false,
             skills: ["LLM Fine-tuning", "RAG Systems", "Deep Learning", "Computer Vision", "MLOps", "Data Analytics"]
         },
@@ -23,7 +23,7 @@ export const ParallaxScrollFeatureSection = () => {
             title: "Scalable Systems",
             subtitle: "SOFTWARE DEVELOPMENT",
             description: "Building the foundation for resilient digital ecosystems. I engineer full-stack solutions with a focus on system architecture, modular design, and high-performance backends using Go, Next.js, and Python.",
-            imageUrl: '/feature/feature2.jpg',
+            imageUrl: '/feature/feature2.webp',
             reverse: true,
             skills: ["System Architecture", "Full-Stack Dev", "Docker & K8s", "API Design", "DevOps", "Software Design"]
         },
@@ -32,7 +32,7 @@ export const ParallaxScrollFeatureSection = () => {
             title: "Strategic Innovation",
             subtitle: "SOFT SKILLS & LEADERSHIP",
             description: "Translating complex technical requirements into impactful business solutions through systemic thinking, strategic leadership, and clear communication within cross-functional teams.",
-            imageUrl: '/feature/feature3.jpg',
+            imageUrl: '/feature/feature3.webp',
             reverse: false,
             skills: ["Systemic Thinking", "Leadership", "Problem Solving", "Teamwork", "Communication", "Research"]
         }
@@ -127,7 +127,7 @@ export const ParallaxScrollFeatureSection = () => {
                                             <span
                                                 key={skill}
                                                 className={cn(
-                                                    "text-[11px] md:text-xs font-bold uppercase tracking-widest text-zinc-400 border border-zinc-200 dark:border-zinc-800 px-5 py-2.5 rounded-full transition-all duration-300 cursor-default bg-transparent",
+                                                    "text-[11px] md:text-xs font-extrabold uppercase tracking-widest text-black dark:text-white border border-zinc-200 dark:border-zinc-800 px-5 py-2.5 rounded-full transition-all duration-300 cursor-default bg-transparent",
                                                     colors[i % colors.length]
                                                 )}
                                             >
@@ -151,10 +151,8 @@ export const ParallaxScrollFeatureSection = () => {
                                     section.reverse ? "lg:order-1" : "lg:order-2"
                                 )}
                             >
-                                <motion.div
-                                    className="relative w-full h-full group overflow-hidden bg-transparent"
-                                    animate={{ y: [0, -14, 0] }}
-                                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: index * 0.4 }}
+                                <div
+                                    className="relative w-full h-full group overflow-hidden bg-white dark:bg-transparent"
                                 >
                                     <Image
                                         src={section.imageUrl}
@@ -165,12 +163,12 @@ export const ParallaxScrollFeatureSection = () => {
                                         sizes="(max-width: 1024px) 100vw, 600px"
                                     />
                                     {/* Replace expensive maskImage with radial gradient overlays */}
-                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,hsl(var(--background))_90%)] dark:bg-[radial-gradient(circle_at_center,transparent_30%,#000000_90%)] pointer-events-none" />
+                                    <div className="absolute inset-0 hidden dark:block bg-[radial-gradient(circle_at_center,transparent_30%,hsl(var(--background))_90%)] dark:bg-[radial-gradient(circle_at_center,transparent_30%,#000000_90%)] pointer-events-none" />
                                     
                                     {/* Seamless blending gradients */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background dark:from-black dark:to-black pointer-events-none opacity-80" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background dark:from-black dark:to-black pointer-events-none opacity-60" />
-                                </motion.div>
+                                    <div className="absolute inset-0 hidden dark:block bg-gradient-to-t from-background via-transparent to-background dark:from-black dark:to-black pointer-events-none opacity-80" />
+                                    <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-background via-transparent to-background dark:from-black dark:to-black pointer-events-none opacity-60" />
+                                </div>
                             </motion.div>
                         </div>
                     </div>

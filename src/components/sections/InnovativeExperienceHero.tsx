@@ -24,28 +24,28 @@ interface InnovativeExperienceHeroProps {
 
 const NODES_DATA: Record<string, NodeData[]> = {
     education: [
-        { label: 'HSC — Science', description: 'Higher Secondary Certificate, Science group (GPA 3.0/5.0).', orbitIndex: 0, position: 0.1, imageUrl: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=400&auto=format&fit=crop" },
-        { label: 'SSC — Science', description: 'Secondary School Certificate, Science group (GPA 4.61/5.0).', orbitIndex: 1, position: 0.25, imageUrl: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Learning Python', description: 'Self-teaching Python fundamentals for future AI work.', orbitIndex: 0, position: 0.45, imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Learning Java', description: 'Building core programming fundamentals with Java.', orbitIndex: 1, position: 0.65, imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=400&auto=format&fit=crop" },
-        { label: 'HTML & CSS', description: 'Practicing front-end fundamentals through real projects.', orbitIndex: 0, position: 0.85, imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=400&auto=format&fit=crop" },
-        { label: 'AI Fundamentals', description: 'Exploring the basics of artificial intelligence.', orbitIndex: 1, position: 0.05, imageUrl: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34?q=80&w=400&auto=format&fit=crop" },
+        { label: 'Telkom University', description: 'Bachelor of Technology - Information Technology (GPA 3.8/4.0).', orbitIndex: 0, position: 0.1, imageUrl: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'SMAN 88 Jakarta', description: 'High School Diploma - Science (IPA) Major.', orbitIndex: 1, position: 0.25, imageUrl: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Coding Camp DBS', description: 'Scholarship Awardee – Intensive AI Engineer training.', orbitIndex: 0, position: 0.45, imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'IDCamp IOH', description: 'Machine Learning Engineer Program (Industry Standard).', orbitIndex: 1, position: 0.65, imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'CPS Research Asst', description: 'Deep Learning & CV instruction and academic review.', orbitIndex: 0, position: 0.85, imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'GDSC ML Path', description: 'Mastering regression, classification, and core ML.', orbitIndex: 1, position: 0.05, imageUrl: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34?q=80&w=400&auto=format&fit=crop&fm=webp" },
     ],
     journey: [
-        { label: 'Started Coding', description: 'Began learning to code, starting with HTML & CSS basics.', orbitIndex: 0, position: 0.15, imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Built To-Do App', description: 'Shipped a working to-do list web app end to end.', orbitIndex: 1, position: 0.35, imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Explored Trading', description: 'Started learning about stock markets and trading.', orbitIndex: 0, position: 0.55, imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Animation Practice', description: 'Started building a site to practice web animation.', orbitIndex: 1, position: 0.75, imageUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Learning AI', description: 'Began exploring AI concepts and tools.', orbitIndex: 0, position: 0.9, imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Crypto Curiosity', description: 'Exploring crypto and meme coins as a side interest.', orbitIndex: 1, position: 0.02, imageUrl: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=400&auto=format&fit=crop" },
+        { label: 'Project Officer', description: 'Telkom Digistar - Managing digital talent programs.', orbitIndex: 0, position: 0.15, imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Academic Affairs', description: 'HMIT Telkom - Planning academic & student support.', orbitIndex: 1, position: 0.35, imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Public Relations', description: 'Youth Ranger Indonesia - Brand narrative & engagement.', orbitIndex: 0, position: 0.55, imageUrl: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Fundraising Lead', description: 'GI BEI Telkom - Strategic donor & sponsorship outreach.', orbitIndex: 1, position: 0.75, imageUrl: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Network Assistant', description: 'IFLAB Assistant - Guiding Socket Programming projects.', orbitIndex: 0, position: 0.9, imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'HR Management', description: 'CPS Laboratory - Fostering lab development & culture.', orbitIndex: 1, position: 0.02, imageUrl: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=400&auto=format&fit=crop&fm=webp" },
     ],
     experience: [
-        { label: 'To-Do List Website', description: 'A clean, responsive task manager built from scratch.', orbitIndex: 0, position: 0.2, imageUrl: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Proposal Website', description: 'A creative, animated single-page site.', orbitIndex: 1, position: 0.45, imageUrl: "https://images.unsplash.com/photo-1454165833911-5421db635848?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Animation Website', description: 'A playground for CSS/JS animation techniques.', orbitIndex: 0, position: 0.6, imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Python Practice', description: 'Small scripts and exercises while learning Python.', orbitIndex: 1, position: 0.8, imageUrl: "https://images.unsplash.com/photo-1518433278988-c7bc488ce92d?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Java Practice', description: 'Working through Java fundamentals with small programs.', orbitIndex: 0, position: 0.95, imageUrl: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=400&auto=format&fit=crop" },
-        { label: 'Market Watching', description: 'Tracking stocks and crypto to learn how markets move.', orbitIndex: 1, position: 0.1, imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=400&auto=format&fit=crop" },
+        { label: 'CV Researcher', description: 'CPS Lab - End-to-end intelligent model development.', orbitIndex: 0, position: 0.2, imageUrl: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'System Analyst', description: 'ASE Lab - Translating requirements to SRS/SDD/UML.', orbitIndex: 1, position: 0.45, imageUrl: "https://images.unsplash.com/photo-1454165833911-5421db635848?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Swarm AI Lead', description: 'Multi-agent blog generation engine (Llama 3.3).', orbitIndex: 0, position: 0.6, imageUrl: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'Automation Eng.', description: 'Browser Agent CLI for AI-driven browser control.', orbitIndex: 1, position: 0.8, imageUrl: "https://images.unsplash.com/photo-1518433278988-c7bc488ce92d?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'IoT Engineering', description: 'Terraflow - Direct-to-Cloud IoT for agriculture.', orbitIndex: 0, position: 0.95, imageUrl: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=400&auto=format&fit=crop&fm=webp" },
+        { label: 'RAG Systems', description: 'DocsInsight Engine - Enterprise private RAG system.', orbitIndex: 1, position: 0.1, imageUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=400&auto=format&fit=crop&fm=webp" },
     ]
 };
 

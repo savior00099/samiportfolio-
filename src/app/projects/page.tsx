@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
+import { gsap } from 'gsap';
 import { useLenis } from 'lenis/react';
 import { useTranslations } from 'next-intl';
 import { Search, X, Layers, ArrowRight, ArrowUpRight, Sparkles, Code2, Zap, Brain, Cpu, Wifi, Blocks, Globe, Database, LayoutGrid, List } from 'lucide-react';
@@ -13,17 +14,97 @@ import { HeroParallax } from '@/components/ui/hero-parallax';
 import { LogoTimeline, LogoItem } from '@/components/ui/logo-timeline';
 import { Icons } from '@/components/icons';
 import { Meteors } from '@/components/ui/meteors';
-import dynamic from 'next/dynamic';
-
-const ProjectContact = dynamic(() => import('@/components/sections/ProjectContact').then(mod => mod.ProjectContact), { ssr: true });
-const ProjectStats = dynamic(() => import('@/components/sections/ProjectStats').then(mod => mod.ProjectStats), { ssr: true });
+import { ProjectContact } from '@/components/sections/ProjectContact';
+import { ProjectStats } from '@/components/sections/ProjectStats';
 
 import { usePerformance } from '@/hooks/usePerformance';
-import { ProjectPlaceholder } from '@/components/projects/ProjectPlaceholder';
+import { ProjectPlaceholder, getPlaceholderImageUrl } from '@/components/projects/ProjectPlaceholder';
+import { DeferredMount } from '@/components/ui/DeferredMount';
 
 import { getProjectImages } from '@/app/actions/getProjectImages';
 
 type FilterType = 'all' | 'ongoing' | 'completed';
+
+// ─── Magnetic Fill-Invert Button ─────────────────────────────────────────────
+function MagneticFillButton({
+    children,
+    onClick,
+    showArrowFlip = false,
+}: {
+    children: React.ReactNode;
+    onClick: () => void;
+    showArrowFlip?: boolean;
+}) {
+    const btnRef = useRef<HTMLButtonElement>(null);
+    const [isHovered, setIsHovered] = useState(false);
+    const [fillProgress, setFillProgress] = useState(0); // 0→1 fill left-to-right
+
+    // Magnetic tracking
+    const magnetX = useMotionValue(0);
+    const magnetY = useMotionValue(0);
+    const springX = useSpring(magnetX, { stiffness: 300, damping: 22 });
+    const springY = useSpring(magnetY, { stiffness: 300, damping: 22 });
+
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!btnRef.current) return;
+        const rect = btnRef.current.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        // Magnetic pull: max 14px offset
+        magnetX.set((e.clientX - cx) * 0.35);
+        magnetY.set((e.clientY - cy) * 0.35);
+    }, [magnetX, magnetY]);
+
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+        setFillProgress(1);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+        setFillProgress(0);
+        magnetX.set(0);
+        magnetY.set(0);
+    };
+
+    return (
+        <motion.button
+            ref={btnRef}
+            onClick={onClick}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            style={{ x: springX, y: springY }}
+            className={cn(
+                "relative overflow-hidden px-8 py-3 rounded-full font-semibold text-sm",
+                "outline-none focus-visible:ring-2 focus-visible:ring-foreground/50",
+                // Light mode: black bg, white text  |  Dark: white bg, black text
+                "bg-foreground text-background",
+                "border border-foreground",
+                "transition-colors duration-0"
+            )}
+        >
+            {/* Fill layer: slides in from left on hover */}
+            {/* Light mode fill = white; Dark mode fill = black  (using `bg-background`) */}
+            <motion.span
+                aria-hidden
+                className="absolute inset-0 bg-background rounded-full pointer-events-none"
+                initial={{ scaleX: 0, originX: 0 }}
+                animate={{ scaleX: fillProgress, originX: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            />
+
+            {/* Label */}
+            <span className={cn(
+                "relative z-10 flex items-center gap-2 transition-colors duration-300",
+                isHovered ? "text-foreground" : "text-background"
+            )}>
+                {children}
+                <ArrowRight className={cn("w-4 h-4 transition-transform duration-300", showArrowFlip && "rotate-180")} />
+            </span>
+        </motion.button>
+    );
+}
 
 function ProjectListItem({
     project,
@@ -66,13 +147,13 @@ function ProjectListItem({
         // Synchronously update coordinates to prevent the (0,0) render bug
         cursorX.set(e.clientX);
         cursorY.set(e.clientY);
-        
+
         if (itemRef.current) {
             const rect = itemRef.current.getBoundingClientRect();
             mouseX.set(e.clientX - rect.left);
             mouseY.set(e.clientY - rect.top);
         }
-        
+
         setIsHovered(true);
     };
 
@@ -224,8 +305,8 @@ function ProjectListItem({
                             }}
                         >
                             <div className={cn(
-                                "w-[500px] h-[300px] rounded-2xl overflow-hidden border backdrop-blur-xl flex items-center justify-center relative shadow-2xl transition-all duration-300",
-                                "border-white/10 bg-zinc-950"
+                                "w-[500px] h-[300px] rounded-none overflow-hidden backdrop-blur-xl flex items-center justify-center relative shadow-2xl transition-all duration-300",
+                                "bg-zinc-950"
                             )}>
                                 {project.image ? (
                                     <img
@@ -235,7 +316,7 @@ function ProjectListItem({
                                         className="absolute inset-0 w-full h-full object-cover opacity-90 block transition-transform duration-500 hover:scale-105"
                                     />
                                 ) : (
-                                    <ProjectPlaceholder className="pb-0" title="No Preview Image" />
+                                    <ProjectPlaceholder className="pb-0" title={project.title} />
                                 )}
 
                                 {/* Overlay Gradient */}
@@ -522,71 +603,276 @@ function FeaturedCard({ project, onClick, index, isLowPowerMode }: { project: Pr
     );
 }
 
-function ProjectCard({ project, onClick, index }: { project: Project; onClick: () => void; index: number; }) {
+// Curated badge color palette — vibrant but balanced for both light & dark modes
+const BADGE_COLORS = [
+    { border: 'rgba(168, 85, 247, 0.5)', bg: 'rgba(168, 85, 247, 0.12)', text: 'rgb(168, 85, 247)' },   // purple
+    { border: 'rgba(59, 130, 246, 0.5)', bg: 'rgba(59, 130, 246, 0.12)', text: 'rgb(59, 130, 246)' },    // blue
+    { border: 'rgba(16, 185, 129, 0.5)', bg: 'rgba(16, 185, 129, 0.12)', text: 'rgb(16, 185, 129)' },    // emerald
+    { border: 'rgba(245, 158, 11, 0.5)', bg: 'rgba(245, 158, 11, 0.12)', text: 'rgb(245, 158, 11)' },    // amber
+    { border: 'rgba(236, 72, 153, 0.5)', bg: 'rgba(236, 72, 153, 0.12)', text: 'rgb(236, 72, 153)' },    // pink
+    { border: 'rgba(6, 182, 212, 0.5)', bg: 'rgba(6, 182, 212, 0.12)', text: 'rgb(6, 182, 212)' },     // cyan
+    { border: 'rgba(239, 68, 68, 0.5)', bg: 'rgba(239, 68, 68, 0.12)', text: 'rgb(239, 68, 68)' },     // red
+    { border: 'rgba(34, 197, 94, 0.5)', bg: 'rgba(34, 197, 94, 0.12)', text: 'rgb(34, 197, 94)' },     // green
+    { border: 'rgba(251, 146, 60, 0.5)', bg: 'rgba(251, 146, 60, 0.12)', text: 'rgb(251, 146, 60)' },    // orange
+    { border: 'rgba(99, 102, 241, 0.5)', bg: 'rgba(99, 102, 241, 0.12)', text: 'rgb(99, 102, 241)' },    // indigo
+    { border: 'rgba(20, 184, 166, 0.5)', bg: 'rgba(20, 184, 166, 0.12)', text: 'rgb(20, 184, 166)' },    // teal
+    { border: 'rgba(217, 70, 239, 0.5)', bg: 'rgba(217, 70, 239, 0.12)', text: 'rgb(217, 70, 239)' },    // fuchsia
+];
+
+// Deterministic color from string — same string always gets same color, but varied across badges
+function getBadgeColor(label: string, cardIndex: number) {
+    let hash = 0;
+    for (let i = 0; i < label.length; i++) {
+        hash = label.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const idx = Math.abs(hash + cardIndex * 7) % BADGE_COLORS.length;
+    return BADGE_COLORS[idx];
+}
+
+function ProjectCard({ project, onClick, index, isLowPowerMode }: { project: Project; onClick: () => void; index: number; isLowPowerMode?: boolean; }) {
     const isOngoing = project.status === 'ongoing';
+    const cardRef = useRef<HTMLElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
+    const imageBoxRef = useRef<HTMLDivElement>(null);
+    const contentBoxRef = useRef<HTMLDivElement>(null);
+    const [isHovered, setIsHovered] = useState(false);
+    const isHoveredRef = useRef(false);
+    const isScrollingRef = useRef(false);
+    const lastClientPos = useRef<{ x: number; y: number } | null>(null);
+
+    // Use Lenis to detect scroll velocity — when scrolling, disable tilt
+    useLenis((lenis) => {
+        if (isLowPowerMode) return;
+        const velocity = Math.abs(lenis.velocity);
+        const wasScrolling = isScrollingRef.current;
+        isScrollingRef.current = velocity > 0.5;
+
+        // When scroll starts while hovered, smoothly reset tilt to neutral
+        if (isScrollingRef.current && isHoveredRef.current && !wasScrolling) {
+            gsap.to(innerRef.current, {
+                rotateX: 0,
+                rotateY: 0,
+                scale: 1.02,
+                duration: 0.4,
+                ease: 'power2.out',
+                overwrite: 'auto',
+            });
+            gsap.to(imageBoxRef.current, {
+                z: 0,
+                duration: 0.4,
+                ease: 'power2.out',
+                overwrite: 'auto',
+            });
+            gsap.to(contentBoxRef.current, {
+                z: 0,
+                duration: 0.4,
+                ease: 'power2.out',
+                overwrite: 'auto',
+            });
+        }
+
+        // When scroll stops and still hovered, recalculate tilt from last known position
+        if (!isScrollingRef.current && wasScrolling && isHoveredRef.current && lastClientPos.current) {
+            requestAnimationFrame(() => {
+                if (isHoveredRef.current && lastClientPos.current && cardRef.current) {
+                    applyTilt(lastClientPos.current.x, lastClientPos.current.y);
+                }
+            });
+        }
+    });
+
+    const applyTilt = (clientX: number, clientY: number) => {
+        if (!cardRef.current || !innerRef.current || isLowPowerMode || isScrollingRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        const x = (clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
+        const y = (clientY - rect.top) / rect.height - 0.5;
+        const clampedX = Math.max(-0.5, Math.min(0.5, x));
+        const clampedY = Math.max(-0.5, Math.min(0.5, y));
+
+        gsap.to(innerRef.current, {
+            rotateX: -clampedY * 24, // 12 deg max each direction
+            rotateY: clampedX * 24,
+            scale: 1.02,
+            duration: 0.5,
+            ease: 'power2.out',
+            overwrite: 'auto',
+        });
+        gsap.to(imageBoxRef.current, {
+            z: 30,
+            duration: 0.5,
+            ease: 'power2.out',
+            overwrite: 'auto',
+        });
+        gsap.to(contentBoxRef.current, {
+            z: 15,
+            duration: 0.5,
+            ease: 'power2.out',
+            overwrite: 'auto',
+        });
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+        if (isLowPowerMode) return;
+        lastClientPos.current = { x: e.clientX, y: e.clientY };
+        if (!isScrollingRef.current) {
+            applyTilt(e.clientX, e.clientY);
+        }
+    };
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+        isHoveredRef.current = true;
+        lastClientPos.current = { x: e.clientX, y: e.clientY };
+        setIsHovered(true);
+        if (!isLowPowerMode && !isScrollingRef.current) {
+            applyTilt(e.clientX, e.clientY);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        isHoveredRef.current = false;
+        lastClientPos.current = null;
+        setIsHovered(false);
+        if (!isLowPowerMode) {
+            gsap.to(innerRef.current, {
+                rotateX: 0,
+                rotateY: 0,
+                scale: 1,
+                duration: 0.6,
+                ease: 'power3.out',
+                overwrite: 'auto',
+            });
+            gsap.to(imageBoxRef.current, {
+                z: 0,
+                duration: 0.6,
+                ease: 'power3.out',
+                overwrite: 'auto',
+            });
+            gsap.to(contentBoxRef.current, {
+                z: 0,
+                duration: 0.6,
+                ease: 'power3.out',
+                overwrite: 'auto',
+            });
+        }
+    };
+
+    // Set initial GSAP transforms
+    useEffect(() => {
+        if (isLowPowerMode) return;
+        if (innerRef.current) {
+            gsap.set(innerRef.current, { transformStyle: 'preserve-3d', transformPerspective: 1000 });
+        }
+        if (imageBoxRef.current) {
+            gsap.set(imageBoxRef.current, { z: 0 });
+        }
+        if (contentBoxRef.current) {
+            gsap.set(contentBoxRef.current, { z: 0 });
+        }
+    }, [isLowPowerMode]);
 
     return (
         <motion.article
+            ref={cardRef}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-30px" }}
             transition={{ duration: 0.6, delay: 0.1 * (index % 2) }}
-            className="group cursor-pointer flex flex-col gap-6"
+            className="group cursor-pointer"
+            style={{ perspective: 1000 }}
             onClick={onClick}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
-            {/* Top Image Box */}
-            <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-3xl overflow-hidden bg-secondary/10 border border-foreground/5 dark:border-white/10 shadow-sm transition-all duration-500 group-hover:shadow-2xl dark:shadow-none shadow-black/5 group-hover:-translate-y-1">
-                {project.image ? (
-                    <img
-                        src={project.image}
-                        alt={project.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                ) : (
-                    <ProjectPlaceholder className="absolute inset-0" title={project.title} />
-                )}
-                
-                {/* Subtle overlay on hover */}
-                <div className="absolute inset-0 bg-foreground/5 dark:bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-            </div>
+            <div
+                ref={innerRef}
+                className="flex flex-col gap-6 h-full"
+                style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
+            >
+                {/* Top Image Box */}
+                <div
+                    ref={imageBoxRef}
+                    className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-3xl overflow-hidden bg-secondary/10 border border-foreground/5 dark:border-white/10 shadow-sm group-hover:shadow-2xl dark:shadow-none shadow-black/5"
+                    style={{ willChange: 'transform' }}
+                >
+                    {project.image ? (
+                        <img
+                            src={project.image}
+                            alt={project.title}
+                            loading="lazy"
+                            className="w-full h-full object-cover"
+                            draggable={false}
+                        />
+                    ) : (
+                        <ProjectPlaceholder className="absolute inset-0" title={project.title} />
+                    )}
 
-            {/* Bottom Content Box */}
-            <div className="flex flex-col flex-grow px-1 md:px-0">
-                
-                {/* Title & Badge Row */}
-                <div className="flex items-start justify-between gap-4 mb-3">
-                    <h3 className="text-3xl sm:text-4xl font-serif-elegant text-foreground group-hover:text-primary transition-colors tracking-tight">
-                        {project.title}
-                    </h3>
-                    <div className="shrink-0 mt-1 sm:mt-2">
-                        <span className="px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-mono tracking-wide border border-foreground/15 dark:border-white/20 text-muted-foreground bg-transparent transition-colors group-hover:border-primary/30 group-hover:bg-primary/5 uppercase">
-                            {project.category || (isOngoing ? 'In Development' : 'Completed')}
-                        </span>
-                    </div>
+                    {/* Subtle overlay on hover */}
+                    <div className="absolute inset-0 bg-foreground/5 dark:bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
 
-                {/* Description */}
-                <p className="text-muted-foreground/80 md:text-lg leading-relaxed mb-6 line-clamp-3">
-                    {project.description}
-                </p>
+                {/* Bottom Content Box */}
+                <div
+                    ref={contentBoxRef}
+                    className="flex flex-col flex-grow px-1 md:px-0"
+                    style={{ willChange: 'transform' }}
+                >
+                    {/* Title & Badge Row */}
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                        <h3 className="text-3xl sm:text-4xl font-serif-elegant text-foreground group-hover:text-primary transition-colors tracking-tight">
+                            {project.title}
+                        </h3>
+                        <div className="shrink-0 mt-1 sm:mt-2">
+                            {(() => {
+                                const categoryText = project.category || (isOngoing ? 'In Development' : 'Completed');
+                                const color = getBadgeColor(categoryText, index);
+                                return (
+                                    <span
+                                        className="px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-mono tracking-wide border transition-all duration-300 uppercase"
+                                        style={{
+                                            borderColor: isHovered ? color.border : undefined,
+                                            backgroundColor: isHovered ? color.bg : 'transparent',
+                                            color: isHovered ? color.text : undefined,
+                                        }}
+                                    >
+                                        {categoryText}
+                                    </span>
+                                );
+                            })()}
+                        </div>
+                    </div>
 
-                {/* Footer Tech Badges */}
-                <div className="mt-auto flex flex-wrap gap-2 sm:gap-2.5 items-center">
-                    {project.techStack.slice(0, 4).map((tech) => {
-                        const Icon = Icons[getIconKey(tech)];
-                        return (
-                            <div key={tech} className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-foreground/10 dark:border-white/10 text-[11px] sm:text-xs font-medium text-foreground/70 bg-transparent transition-colors group-hover:border-foreground/20 dark:group-hover:border-white/20 hover:!bg-secondary/10">
-                                {Icon ? <Icon className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full bg-foreground/30" />}
-                                {tech}
-                            </div>
-                        );
-                    })}
-                    {project.techStack.length > 4 && (
-                        <span className="text-xs font-mono text-muted-foreground opacity-60 ml-1">
-                            +{project.techStack.length - 4}
-                        </span>
-                    )}
+                    {/* Description */}
+                    <p className="text-muted-foreground/80 md:text-lg leading-relaxed mb-6 line-clamp-3">
+                        {project.description}
+                    </p>
+
+                    {/* Footer Tech Badges */}
+                    <div className="mt-auto flex flex-wrap gap-2 sm:gap-2.5 items-center">
+                        {project.techStack.slice(0, 4).map((tech, techIdx) => {
+                            const Icon = Icons[getIconKey(tech)];
+                            const color = getBadgeColor(tech, index + techIdx);
+                            return (
+                                <div
+                                    key={tech}
+                                    className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border text-[11px] sm:text-xs font-medium transition-all duration-300"
+                                    style={{
+                                        borderColor: isHovered ? color.border : undefined,
+                                        backgroundColor: isHovered ? color.bg : 'transparent',
+                                        color: isHovered ? color.text : undefined,
+                                    }}
+                                >
+                                    {Icon ? <Icon className="w-3.5 h-3.5" /> : <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: isHovered ? color.text : undefined }} />}
+                                    {tech}
+                                </div>
+                            );
+                        })}
+                        {project.techStack.length > 4 && (
+                            <span className="text-xs font-mono text-muted-foreground opacity-60 ml-1">
+                                +{project.techStack.length - 4}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
         </motion.article>
@@ -687,14 +973,16 @@ export default function ProjectsPage() {
 
     const products = useMemo(() => {
         const techImages = [
-            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2565&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2832&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2670&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2670&auto=format&fit=crop", // Replaced broken image
-            "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2670&auto=format&fit=crop",
+            "/project/parallax/image1.webp",
+            "/project/parallax/image2.webp",
+            "/project/parallax/image3.webp",
+            "/project/parallax/image4.webp",
+            "/project/parallax/image5.webp",
+            "/project/parallax/image6.webp",
+            "/project/parallax/image7.webp",
+            "/project/parallax/image8.webp",
+            "/project/parallax/image9.webp",
+            "/project/parallax/image10.webp",
         ];
 
         const baseProducts = portfolioData.projects.map((p, i) => ({
@@ -702,7 +990,7 @@ export default function ProjectsPage() {
             link: p.repoUrl || p.demoUrl || '#',
             thumbnail: techImages[i % techImages.length]
         }));
-        return [...baseProducts, ...baseProducts, ...baseProducts].slice(0, 8);
+        return [...baseProducts, ...baseProducts, ...baseProducts].slice(0, 10);
     }, []);
 
     // Generate Timeline Items - delay is calculated in component based on index
@@ -752,6 +1040,11 @@ export default function ProjectsPage() {
                     } catch (e) {
                         console.error("Failed to load images for", project.title, e);
                     }
+
+                    // Preload the placeholder image if no dynamic image is found
+                    const img = new Image();
+                    img.src = getPlaceholderImageUrl(project.title);
+
                     return project;
                 })
             );
@@ -840,222 +1133,218 @@ export default function ProjectsPage() {
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden" style={{ position: 'relative' }}>
-            <HeroParallax products={products} isLowPowerMode={isLowPowerMode} />
+            <DeferredMount>
+                <HeroParallax products={products} isLowPowerMode={isLowPowerMode} />
 
-            {/* Project Stats - Impressive Metrics */}
-            <ProjectStats isLowPowerMode={isLowPowerMode} />
+                {/* Project Stats - Impressive Metrics */}
+                <ProjectStats isLowPowerMode={isLowPowerMode} />
 
-            <div id="project-archive" className="container-creative relative z-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 md:px-8">
-                {/* Search & Filter Control Bar */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mb-10 sm:mb-12 md:mb-16"
-                >
-                    <div className="flex flex-col gap-6 p-0 sm:p-2 rounded-3xl bg-transparent">
 
-                        {/* Top Partition: Header & Search */}
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
-                            {/* Title & Count */}
-                            <div className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-muted-foreground">
-                                    Projects Archive
-                                </h2>
-                                <span className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] font-mono text-muted-foreground border border-white/5">
-                                    {String(filteredProjects.length).padStart(2, '0')}
-                                </span>
-                            </div>
+                <div id="project-archive" className="max-w-[1536px] mx-auto relative z-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 md:px-8">
+                    {/* Search & Filter Control Bar */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="mb-10 sm:mb-12 md:mb-16"
+                    >
+                        <div className="flex flex-col gap-6 p-0 sm:p-2 rounded-3xl bg-transparent">
 
-                            {/* Search Input - Compact */}
-                            <div className="relative group w-full md:w-80">
-                                <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-                                <div className="relative flex items-center bg-transparent rounded-xl hover:bg-white/5 overflow-hidden transition-colors">
-                                    <Search className="absolute left-3 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                    <input
-                                        type="text"
-                                        placeholder="Search projects..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full pl-9 pr-8 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
-                                    />
-                                    {searchQuery && (
-                                        <button
-                                            onClick={() => setSearchQuery('')}
-                                            className="absolute right-2 p-1 rounded-sm hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
-                                    )}
+                            {/* Top Partition: Header & Search */}
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
+                                {/* Title & Count */}
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <h2 className="text-sm font-mono uppercase tracking-[0.2em] text-muted-foreground">
+                                        Projects Archive
+                                    </h2>
+                                    <span className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] font-mono text-muted-foreground border border-white/5">
+                                        {String(filteredProjects.length).padStart(2, '0')}
+                                    </span>
+                                </div>
+
+                                {/* Search Input - Compact */}
+                                <div className="relative group w-full md:w-80">
+                                    <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                                    <div className="relative flex items-center bg-transparent rounded-xl hover:bg-white/5 overflow-hidden transition-colors">
+                                        <Search className="absolute left-3 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search projects..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full pl-9 pr-8 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                                        />
+                                        {searchQuery && (
+                                            <button
+                                                onClick={() => setSearchQuery('')}
+                                                className="absolute right-2 p-1 rounded-sm hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                                            >
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Divider - REMOVED */}
+                            {/* Divider - REMOVED */}
 
-                        {/* Bottom Partition: Controls */}
-                        <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 xl:gap-4">
+                            {/* Bottom Partition: Controls */}
+                            <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 xl:gap-4">
 
-                            {/* Categories - Horizontal Scroll */}
-                            <div className="w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0 no-scrollbar">
-                                <div className="flex items-center gap-1.5 min-w-max px-2">
-                                    {categories.map((cat) => {
-                                        const Icon = cat.icon;
-                                        const isActive = selectedCategory === cat.id;
+                                {/* Categories - Horizontal Scroll */}
+                                <div className="w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0 no-scrollbar">
+                                    <div className="flex items-center gap-1.5 min-w-max px-2">
+                                        {categories.map((cat) => {
+                                            const Icon = cat.icon;
+                                            const isActive = selectedCategory === cat.id;
 
-                                        return (
+                                            return (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => setSelectedCategory(cat.id)}
+                                                    className={cn(
+                                                        "relative group flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300",
+                                                        isActive
+                                                            ? "bg-primary/10 text-primary border border-primary/20"
+                                                            : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                                                    )}
+                                                >
+                                                    <Icon className={cn("w-3.5 h-3.5", isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
+                                                    <span>{cat.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Filters & View Toggle */}
+                                <div className="flex items-center gap-3 px-2 self-end xl:self-auto">
+                                    {/* Status Filters */}
+                                    <div className="flex items-center p-1 bg-foreground/5 dark:bg-white/5 rounded-xl border border-foreground/10 dark:border-white/10">
+                                        {filters.map((f) => (
                                             <button
-                                                key={cat.id}
-                                                onClick={() => setSelectedCategory(cat.id)}
+                                                key={f.key}
+                                                onClick={() => setFilter(f.key)}
                                                 className={cn(
-                                                    "relative group flex items-center gap-2 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300",
-                                                    isActive
-                                                        ? "bg-primary/10 text-primary border border-primary/20"
-                                                        : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent"
+                                                    'relative px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-medium transition-all duration-300',
+                                                    filter === f.key
+                                                        ? 'bg-foreground text-background shadow-sm'
+                                                        : 'text-muted-foreground hover:text-foreground hover:bg-foreground/10 dark:hover:bg-white/10'
                                                 )}
                                             >
-                                                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
-                                                <span>{cat.label}</span>
+                                                {f.label}
                                             </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
+                                        ))}
+                                    </div>
 
-                            {/* Filters & View Toggle */}
-                            <div className="flex items-center gap-3 px-2 self-end xl:self-auto">
-                                {/* Status Filters */}
-                                <div className="flex items-center p-1 bg-transparent rounded-xl">
-                                    {filters.map((f) => (
+                                    {/* View Switcher */}
+                                    <div className="flex items-center p-1 bg-foreground/5 dark:bg-white/5 rounded-xl border border-foreground/10 dark:border-white/10 gap-0.5">
                                         <button
-                                            key={f.key}
-                                            onClick={() => setFilter(f.key)}
+                                            onClick={() => setViewMode('list')}
                                             className={cn(
-                                                'relative px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-medium transition-all duration-300',
-                                                filter === f.key
-                                                    ? 'bg-zinc-800 text-white shadow-sm'
-                                                    : 'text-muted-foreground hover:text-white'
+                                                "p-1.5 rounded-lg transition-all duration-200",
+                                                viewMode === 'list'
+                                                    ? "bg-foreground text-background shadow-sm"
+                                                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/10 dark:hover:bg-white/10"
                                             )}
+                                            title="List View"
                                         >
-                                            {f.label}
+                                            <List className="w-4 h-4" />
                                         </button>
-                                    ))}
+                                        <button
+                                            onClick={() => setViewMode('grid')}
+                                            className={cn(
+                                                "p-1.5 rounded-lg transition-all duration-200",
+                                                viewMode === 'grid'
+                                                    ? "bg-foreground text-background shadow-sm"
+                                                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/10 dark:hover:bg-white/10"
+                                            )}
+                                            title="Grid View"
+                                        >
+                                            <LayoutGrid className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </div>
 
-                                {/* Vertical Divider REMOVED */}
-
-                                {/* View Switcher */}
-                                <div className="flex items-center p-1 bg-transparent rounded-xl gap-0.5">
-                                    <button
-                                        onClick={() => setViewMode('list')}
-                                        className={cn(
-                                            "p-1.5 rounded-lg transition-all duration-200",
-                                            viewMode === 'list'
-                                                ? "bg-zinc-800 text-white shadow-sm"
-                                                : "text-muted-foreground hover:text-white hover:bg-white/5"
-                                        )}
-                                        title="List View"
-                                    >
-                                        <List className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode('grid')}
-                                        className={cn(
-                                            "p-1.5 rounded-lg transition-all duration-200",
-                                            viewMode === 'grid'
-                                                ? "bg-zinc-800 text-white shadow-sm"
-                                                : "text-muted-foreground hover:text-white hover:bg-white/5"
-                                        )}
-                                        title="Grid View"
-                                    >
-                                        <LayoutGrid className="w-4 h-4" />
-                                    </button>
-                                </div>
                             </div>
-
                         </div>
+                    </motion.div >
+
+                    {/* Projects List Layout */}
+                    <div className="space-y-0 mb-8 sm:mb-10 md:mb-12">
+
+                        {viewMode === 'list' ? (
+                            <div className="border-t border-white/5">
+                                <AnimatePresence mode="popLayout">
+                                    {filteredProjects.slice(0, visibleCount).map((project, index) => (
+                                        <ProjectListItem
+                                            key={project.id}
+                                            project={project}
+                                            onClick={() => {
+                                                sessionStorage.setItem('projects-last-clicked', project.slug);
+                                                sessionStorage.setItem('projects-visible-count', String(visibleCount));
+                                                sessionStorage.setItem('projects-view-mode', viewMode);
+                                                router.push(`/projects/${project.slug}`);
+                                            }}
+                                            index={index}
+                                            isLowPowerMode={isLowPowerMode}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16 md:gap-y-24">
+                                <AnimatePresence mode="popLayout">
+                                    {filteredProjects.slice(0, visibleCount).map((project, index) => (
+                                        <ProjectCard
+                                            key={project.id}
+                                            project={project}
+                                            onClick={() => {
+                                                sessionStorage.setItem('projects-last-clicked', project.slug);
+                                                sessionStorage.setItem('projects-visible-count', String(visibleCount));
+                                                sessionStorage.setItem('projects-view-mode', viewMode);
+                                                router.push(`/projects/${project.slug}`);
+                                            }}
+                                            index={index}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                            </div>
+                        )}
                     </div>
-                </motion.div >
 
-                {/* Projects List Layout */}
-                <div className="space-y-0 mb-8 sm:mb-10 md:mb-12">
-
-                    {viewMode === 'list' ? (
-                        <div className="border-t border-white/5">
-                            <AnimatePresence mode="popLayout">
-                                {filteredProjects.slice(0, visibleCount).map((project, index) => (
-                                    <ProjectListItem
-                                        key={project.id}
-                                        project={project}
-                                        onClick={() => {
-                                            sessionStorage.setItem('projects-last-clicked', project.slug);
-                                            sessionStorage.setItem('projects-visible-count', String(visibleCount));
-                                            sessionStorage.setItem('projects-view-mode', viewMode);
-                                            router.push(`/projects/${project.slug}`);
-                                        }}
-                                        index={index}
-                                        isLowPowerMode={isLowPowerMode}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16 md:gap-y-24">
-                            <AnimatePresence mode="popLayout">
-                                {filteredProjects.slice(0, visibleCount).map((project, index) => (
-                                    <ProjectCard
-                                        key={project.id}
-                                        project={project}
-                                        onClick={() => {
-                                            sessionStorage.setItem('projects-last-clicked', project.slug);
-                                            sessionStorage.setItem('projects-visible-count', String(visibleCount));
-                                            sessionStorage.setItem('projects-view-mode', viewMode);
-                                            router.push(`/projects/${project.slug}`);
-                                        }}
-                                        index={index}
-                                    />
-                                ))}
-                            </AnimatePresence>
-                        </div>
-                    )}
-                </div>
-
-                {/* View All Button */}
-                {
-                    filteredProjects.length > 10 && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="flex justify-center mt-12 sm:mt-16 pb-12"
-                        >
-                            <button
-                                onClick={() => setVisibleCount(visibleCount < filteredProjects.length ? filteredProjects.length : 10)}
-                                className="group relative px-8 py-3 rounded-full bg-zinc-900 border border-white/10 text-white font-semibold hover:bg-white/5 transition-all outline-none focus:ring-2 focus:ring-primary/50"
+                    {/* View All Button — Magnetic Fill-Invert */}
+                    {
+                        filteredProjects.length > 10 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="flex justify-center mt-12 sm:mt-16 pb-12"
                             >
-                                <span className="relative z-10 flex items-center gap-2">
+                                <MagneticFillButton
+                                    onClick={() => setVisibleCount(visibleCount < filteredProjects.length ? filteredProjects.length : 10)}
+                                    showArrowFlip={visibleCount >= filteredProjects.length}
+                                >
                                     {visibleCount < filteredProjects.length ? 'View All Projects' : 'View Less'}
-                                    <ArrowRight className={cn("w-4 h-4 transition-transform", visibleCount >= filteredProjects.length && "rotate-180")} />
-                                </span>
-                                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity blur-lg" />
-                            </button>
-                        </motion.div>
-                    )
-                }
+                                </MagneticFillButton>
+                            </motion.div>
+                        )
+                    }
 
-                {
-                    filteredProjects.length === 0 && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
-                            <Layers className="w-16 h-16 mx-auto text-white/20 mb-4" />
-                            <p className="text-lg text-white/50">No projects found</p>
-                        </motion.div>
-                    )
-                }
-                {/* Contact Section */}
-                <ProjectContact isLowPowerMode={isLowPowerMode} />
-            </div >
-
+                    {
+                        filteredProjects.length === 0 && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20">
+                                <Layers className="w-16 h-16 mx-auto text-white/20 mb-4" />
+                                <p className="text-lg text-white/50">No projects found</p>
+                            </motion.div>
+                        )
+                    }
+                    {/* Contact Section */}
+                    <ProjectContact isLowPowerMode={isLowPowerMode} />
+                </div >
+            </DeferredMount>
         </div >
 
 

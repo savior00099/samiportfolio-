@@ -6,15 +6,14 @@ import { useTranslations } from 'next-intl';
 import { portfolioData } from '@/data/portfolio';
 import { SplineScene } from '@/components/ui/SplineScene';
 import { TextPressure } from '@/components/ui/TextPressure';
-import dynamic from 'next/dynamic';
-
-const KineticTechGrid = dynamic(() => import('@/components/ui/KineticTechGrid').then(mod => mod.KineticTechGrid), { ssr: true });
-const ArchedTechIconsInteractive = dynamic(() => import('@/components/ui/ArchedTechIcons').then(mod => mod.ArchedTechIconsInteractive), { ssr: true });
-const HorizontalScrollCarousel = dynamic(() => import('@/components/ui/horizontal-scroll-carousel').then(mod => mod.HorizontalScrollCarousel), { ssr: true });
-const HardSkills = dynamic(() => import('@/components/sections/skills/HardSkills').then(mod => mod.HardSkills), { ssr: true });
-const ToolsSection = dynamic(() => import('@/components/sections/skills/ToolsSection').then(mod => mod.ToolsSection), { ssr: true });
+import { KineticTechGrid } from '@/components/ui/KineticTechGrid';
+import { ArchedTechIconsInteractive } from '@/components/ui/ArchedTechIcons';
+import { HorizontalScrollCarousel } from '@/components/ui/horizontal-scroll-carousel';
+import { HardSkills } from '@/components/sections/skills/HardSkills';
+import { ToolsSection } from '@/components/sections/skills/ToolsSection';
 import FeatureSection from '@/components/ui/stack-feature-section';
 import { cn } from '@/lib/utils';
+import { DeferredMount } from '@/components/ui/DeferredMount';
 
 const techLogos: Record<string, string> = {
     'TypeScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
@@ -188,10 +187,12 @@ export default function SkillsPage() {
                     className="absolute inset-0 z-0"
                     style={{ y: yHeroSpline, scale: scaleSpline, willChange: 'transform' }}
                 >
-                    <SplineScene
-                        scene="https://prod.spline.design/qVnpleqGGhqRlQYK/scene.splinecode"
-                        className="w-full h-full opacity-60 md:opacity-100"
-                    />
+                    <DeferredMount fallback={<div className="w-full h-full opacity-10 bg-zinc-800 animate-pulse" />}>
+                        <SplineScene
+                            scene="https://prod.spline.design/qVnpleqGGhqRlQYK/scene.splinecode"
+                            className="w-full h-full opacity-60 md:opacity-100"
+                        />
+                    </DeferredMount>
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
                 </motion.div>
 
@@ -209,57 +210,67 @@ export default function SkillsPage() {
                         style={{ willChange: 'transform, opacity', y: yHeroText, opacity: opacityHero }}
                         className="flex flex-col items-center"
                     >
-                        {/* REFINED: Titanium Solid Typography with Crystalline Sheen */}
-                        <div className="relative group px-10">
+                        {/* REFINED: Sleek Minimalist Typography with Elegant Hover */}
+                        <motion.div 
+                            className="relative group px-10 cursor-default pointer-events-auto"
+                            initial="rest"
+                            whileHover="hover"
+                            animate="rest"
+                        >
                             <motion.h1
-                                className="relative text-[10vw] md:text-[8vw] font-black italic uppercase leading-none tracking-tighter text-foreground drop-shadow-[0_0_20px_rgba(var(--foreground),0.15)] select-none pointer-events-none"
+                                variants={{
+                                    rest: { scale: 1, textShadow: "0px 0px 0px rgba(255,255,255,0)" },
+                                    hover: { scale: 1.02, textShadow: "0px 0px 25px rgba(255,255,255,0.2)" }
+                                }}
+                                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                                className="relative z-10 text-[9vw] md:text-[7vw] font-semibold uppercase leading-[0.9] tracking-tight text-zinc-800 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white select-none transition-colors duration-500"
                             >
                                 SKILLS & TOOLS
 
-                                {/* Crystalline Sheen (Refined Elliptical Pulse) */}
+                                {/* Crystalline Sheen (Subtle) */}
                                 <div className="absolute inset-x-0 inset-y-0 flex justify-center pointer-events-none overflow-hidden">
                                     {/* Left-ward Sheen */}
                                     <motion.div
                                         animate={{
                                             left: ["50%", "2%"],
-                                            opacity: [0, 0.5, 0],
+                                            opacity: [0, 0.15, 0],
                                             scale: [0.8, 1.1, 0.8]
                                         }}
                                         transition={{
-                                            duration: 4,
+                                            duration: 5,
                                             repeat: Infinity,
-                                            repeatDelay: 3,
+                                            repeatDelay: 4,
                                             ease: "easeInOut"
                                         }}
-                                        className="absolute top-0 bottom-0 w-[40%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.4)_0%,transparent_70%)] blur-md rounded-[100%]"
+                                        className="absolute top-0 bottom-0 w-[40%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] blur-md rounded-[100%]"
                                     />
                                     {/* Right-ward Sheen */}
                                     <motion.div
                                         animate={{
                                             left: ["50%", "98%"],
-                                            opacity: [0, 0.5, 0],
+                                            opacity: [0, 0.15, 0],
                                             scale: [0.8, 1.1, 0.8]
                                         }}
                                         transition={{
-                                            duration: 4,
+                                            duration: 5,
                                             repeat: Infinity,
-                                            repeatDelay: 3,
+                                            repeatDelay: 4,
                                             ease: "easeInOut"
                                         }}
                                         style={{ translateX: "-100%" }}
-                                        className="absolute top-0 bottom-0 w-[40%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.4)_0%,transparent_70%)] blur-md rounded-[100%]"
+                                        className="absolute top-0 bottom-0 w-[40%] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] blur-md rounded-[100%]"
                                     />
                                 </div>
                             </motion.h1>
-                        </div>
+                        </motion.div>
 
-                        {/* Subtitle - exactly as in Gambar 1 & 2 but MAX visibility */}
+                        {/* Subtitle - Modern Minimalist */}
                         <motion.p
                             initial={{ opacity: 0, y: 15 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, delay: 0.3 }}
-                            className="max-w-4xl mx-auto mt-4 text-foreground font-mono leading-relaxed uppercase tracking-[0.5em] md:tracking-[1em] text-[10px] md:text-[13px] font-black pointer-events-auto shadow-sm"
+                            className="max-w-4xl mx-auto mt-6 text-muted-foreground font-mono leading-relaxed uppercase tracking-[0.3em] md:tracking-[0.5em] text-[10px] md:text-[11px] font-medium pointer-events-auto"
                         >
                             {t('subtitle')}
                         </motion.p>
@@ -287,63 +298,65 @@ export default function SkillsPage() {
                 <VaporFog className="opacity-30" />
             </div>
 
-            <HorizontalScrollCarousel />
-            <HardSkills />
-            <section className="pt-12 pb-48 px-8 relative overflow-hidden bg-background">
-                <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-                </div>
-
-                <div className="max-w-7xl mx-auto relative z-10 w-full mt-12 md:mt-16">
-                    <div className="relative w-full flex flex-col justify-center items-center mb-0">
-                        <ArchedTechIconsInteractive
-                            key="arched-tech-icons-interactive"
-                            icons={portfolioData.techStack.map(t => techLogos[t.name] || (t.icon?.includes('http') ? t.icon : `https://cdn.simpleicons.org/${t.name.toLowerCase().replace(/[\s.]/g, '')}`))}
-                        />
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ margin: "-100px", once: true }}
-                            transition={{ duration: 0.6 }}
-                            className="text-center space-y-4 max-w-3xl mx-auto px-4 relative z-10 pointer-events-auto -mt-[30px] sm:-mt-[50px] md:-mt-[70px]"
-                        >
-                            <motion.span
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ margin: "-100px", once: true }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
-                                className="text-[10px] font-mono uppercase tracking-[0.5em] text-primary/80 font-bold block"
-                            >
-                                CORE TECHNOLOGIES
-                            </motion.span>
-                            <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-foreground">
-                                The Engineering Foundation
-                            </h2>
-                            <p className="text-sm md:text-base text-muted-foreground leading-relaxed pt-2">
-                                Building scalable architectures using modern languages and frameworks optimized for high-performance execution.
-                            </p>
-                        </motion.div>
+            <DeferredMount>
+                <HorizontalScrollCarousel />
+                <HardSkills />
+                <section className="pt-12 pb-48 px-8 relative overflow-hidden bg-background">
+                    <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
                     </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ margin: "-100px", once: true }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="mt-16 sm:mt-20 md:mt-24 w-full"
-                    >
-                        <KineticTechGrid
-                            items={portfolioData.techStack.map(t => ({
-                                name: t.name,
-                                icon: techLogos[t.name] || (t.icon?.includes('http') ? t.icon : `https://cdn.simpleicons.org/${t.name.toLowerCase().replace(/[\s.]/g, '')}`)
-                            }))}
-                        />
-                    </motion.div>
-                </div>
-            </section>
+                    <div className="max-w-7xl mx-auto relative z-10 w-full mt-12 md:mt-16">
+                        <div className="relative w-full flex flex-col justify-center items-center mb-0">
+                            <ArchedTechIconsInteractive
+                                key="arched-tech-icons-interactive"
+                                icons={portfolioData.techStack.map(t => techLogos[t.name] || (t.icon?.includes('http') ? t.icon : `https://cdn.simpleicons.org/${t.name.toLowerCase().replace(/[\s.]/g, '')}`))}
+                            />
 
-            <ToolsSection />
-            <FeatureSection />
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ margin: "-100px", once: true }}
+                                transition={{ duration: 0.6 }}
+                                className="text-center space-y-4 max-w-3xl mx-auto px-4 relative z-10 pointer-events-auto -mt-[30px] sm:-mt-[50px] md:-mt-[70px]"
+                            >
+                                <motion.span
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ margin: "-100px", once: true }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className="text-[10px] font-mono uppercase tracking-[0.5em] text-primary/80 font-bold block"
+                                >
+                                    CORE TECHNOLOGIES
+                                </motion.span>
+                                <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-foreground">
+                                    The Engineering Foundation
+                                </h2>
+                                <p className="text-sm md:text-base text-muted-foreground leading-relaxed pt-2">
+                                    Building scalable architectures using modern languages and frameworks optimized for high-performance execution.
+                                </p>
+                            </motion.div>
+                        </div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ margin: "-100px", once: true }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="mt-16 sm:mt-20 md:mt-24 w-full"
+                        >
+                            <KineticTechGrid
+                                items={portfolioData.techStack.map(t => ({
+                                    name: t.name,
+                                    icon: techLogos[t.name] || (t.icon?.includes('http') ? t.icon : `https://cdn.simpleicons.org/${t.name.toLowerCase().replace(/[\s.]/g, '')}`)
+                                }))}
+                            />
+                        </motion.div>
+                    </div>
+                </section>
+
+                <ToolsSection />
+                <FeatureSection />
+            </DeferredMount>
 
         </div>
     );

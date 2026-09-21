@@ -15,14 +15,11 @@ import { TextPressure } from '@/components/ui/TextPressure';
 import { portfolioData } from '@/data/portfolio';
 import { cn } from "@/lib/utils";
 import { SocialCorner } from '@/components/layout/SocialCorner';
+import { DeferredMount } from '@/components/ui/DeferredMount';
 
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 }
-
-const Footer = dynamic(() => import("@/components/layout/Footer").then(mod => mod.Footer), {
-    ssr: false
-});
 
 const Hyperspeed = dynamic(() => import('@/components/ui/Hyperspeed'), { ssr: false });
 const { hyperspeedPresets } = require('@/components/ui/Hyperspeed');
@@ -32,22 +29,15 @@ const Scene3D = dynamic(() => import('@/components/three/Scene3D').then(mod => (
     loading: () => null
 });
 
-const AboutSection = dynamic(() => import("@/components/sections/AboutSection"), {
-    ssr: false,
-    loading: () => <div className="h-[600px] w-full animate-pulse bg-zinc-100/5 dark:bg-zinc-800/5" />
-});
+import AboutSection from "@/components/sections/AboutSection";
+import ExpertiseSection from "@/components/sections/ExpertiseSection";
+import { HeroVisual } from "@/components/sections/HeroVisual";
+import StatsSection from "@/components/sections/StatsSection";
+import CTASection from "@/components/sections/CTASection";
+import { usePreloadState } from "@/components/ui/arc-preloader-hero";
 
-const ExpertiseSection = dynamic(() => import("@/components/sections/ExpertiseSection"), {
-    ssr: false,
-    loading: () => <div className="h-[500px] w-full animate-pulse bg-zinc-100/5 dark:bg-zinc-800/5" />
-});
-
-const HeroVisual = dynamic(() => import("@/components/sections/HeroVisual").then(mod => mod.HeroVisual), {
-    ssr: false
-});
 
 // ─── Helpers (Keeping Original Design) ───────────────────────────────────────
-
 
 const MetricCTAHijack = () => {
     return (
@@ -58,12 +48,12 @@ const MetricCTAHijack = () => {
                 <div className="sticky top-0 z-0 overflow-hidden">
                     <StatsSection showOnly="bottom" />
                 </div>
-                
+
                 {/* Layer 2: The CTA Section (Slides Over) */}
                 <div className="relative z-20 bg-background dark:bg-black">
                     {/* Top shadow element to prevent downward bleeding into footer */}
-                    <div className="absolute top-0 left-0 w-full h-10 shadow-[0_-50px_100px_rgba(0,0,0,0.05)] dark:shadow-[0_-50px_150px_rgba(0,0,0,0.8)] -z-10" />
-                    
+                    <div className="absolute top-0 left-0 w-full h-10 dark:shadow-[0_-50px_150px_rgba(0,0,0,0.8)] -z-10" />
+
                     <div className="h-[10vh]" />
                     <CTASection />
                     <div className="h-20" />
@@ -73,27 +63,19 @@ const MetricCTAHijack = () => {
     );
 };
 
-const StatsSection = dynamic(() => import("@/components/sections/StatsSection"), {
-    ssr: false,
-    loading: () => <div className="h-[500px] w-full animate-pulse bg-zinc-100/5 dark:bg-zinc-800/5" />
-});
-
-const CTASection = dynamic(() => import("@/components/sections/CTASection"), {
-    ssr: false,
-    loading: () => <div className="h-[400px] w-full animate-pulse bg-zinc-100/5 dark:bg-zinc-800/5" />
-});
-
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+    const { phase } = usePreloadState();
     const [isLoading, setIsLoading] = useState(true);
-    const [isExiting, setIsExiting] = useState(false);
+    const [isInitialLoadingExit, setIsInitialLoadingExit] = useState(false);
+    const [skipAnimation, setSkipAnimation] = useState(false);
 
     useEffect(() => {
         const hasLoaded = sessionStorage.getItem('portfolioLoaded');
         if (hasLoaded) {
+            setSkipAnimation(true);
             setIsLoading(false);
-            setIsExiting(true);
         }
 
         if (typeof window === 'undefined' || !('ResizeObserver' in window)) return;
@@ -111,14 +93,18 @@ export default function HomePage() {
         };
     }, []);
 
+    // Animasikan konten saat LoadingScreen selesai (visit pertama) 
+    // ATAU saat arc preloader mulai naik/selesai (visit kedua dst)
+    const isReadyToAnimate = isLoading ? isInitialLoadingExit : (phase === "reveal" || phase === "done");
+
     useEffect(() => {
-        if (isExiting && !isLoading) {
+        if (isReadyToAnimate) {
             const timer = setTimeout(() => {
                 ScrollTrigger.refresh();
             }, 1500); // Once, after transition is likely done
             return () => clearTimeout(timer);
         }
-    }, [isExiting, isLoading]);
+    }, [isReadyToAnimate]);
 
     const handleLoadingComplete = () => {
         setIsLoading(false);
@@ -128,36 +114,30 @@ export default function HomePage() {
     };
 
     const handleExitStart = () => {
-        setIsExiting(true);
+        setIsInitialLoadingExit(true);
     };
 
     return (
         <>
             {isLoading && <LoadingScreen onComplete={handleLoadingComplete} onExitStart={handleExitStart} duration={2500} />}
             <motion.main
-                initial={{ opacity: 0, y: 40 }}
-                animate={isExiting ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                initial={skipAnimation ? false : { opacity: 0, y: 40 }}
+                animate={skipAnimation ? { opacity: 1, y: 0 } : (isReadyToAnimate ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 })}
                 transition={{
-                    duration: 1.4,
-                    ease: [0.16, 1, 0.3, 1], // Expo out for snappy yet smooth feel
-                    opacity: { duration: 0.8 }
+                    duration: skipAnimation ? 0 : 1.4,
+                    ease: skipAnimation ? "linear" : [0.16, 1, 0.3, 1], // Expo out for snappy yet smooth feel
+                    opacity: { duration: skipAnimation ? 0 : 0.8 }
                 }}
                 className="relative overflow-x-clip will-change-transform will-change-opacity"
             >
-                {/* 
-                   Hero di-mount bersamaan dengan LoadingScreen agar "nyambung".
-                   Komponen internal Hero menggunakan state isExiting untuk memulai animasinya.
-                */}
-                <HeroVisual isExiting={isExiting || !isLoading} />
+                <HeroVisual isExiting={isReadyToAnimate} />
 
-                {!isLoading && (
-                    <>
-                        <ExpertiseSection />
-                        <AboutSection />
-                        <MetricCTAHijack />
-                        <SocialCorner className="fixed bottom-12 right-12 z-[30]" />
-                    </>
-                )}
+                <DeferredMount>
+                    <ExpertiseSection />
+                    <AboutSection />
+                    <MetricCTAHijack />
+                    <SocialCorner className="fixed bottom-12 right-12 z-[30]" />
+                </DeferredMount>
             </motion.main>
         </>
     );

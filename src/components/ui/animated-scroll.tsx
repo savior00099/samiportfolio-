@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent, useSpring, useMotionValue } from 'framer-motion';
 import { cn } from "@/lib/utils";
+import { HoverScrambleText } from '@/components/ui/hover-scramble-text';
 import { ChevronDown } from 'lucide-react';
 import Loader from './Loader';
 
@@ -236,8 +237,7 @@ function BridgeSlide({ page, isActive, scrollProgress, index }: { page: any, isA
         >
             <motion.div style={{ y }} className="space-y-16 max-w-[1200px] w-full px-[5%]">
                 <h2 className="text-4xl md:text-5xl lg:text-7xl font-medium tracking-tight text-foreground dark:text-white leading-[1.1] font-sans">
-                    Discover my latest work and creative solutions <br className="hidden md:block" />
-                    that bring ideas to life
+                    <HoverScrambleText text={"Discover my latest work and creative solutions \nthat bring ideas to life"} />
                 </h2>
                 <div className="flex flex-col items-center gap-6 opacity-30 pt-10">
                     <span className="text-[11px] font-mono font-bold tracking-[0.5em] uppercase text-foreground dark:text-white">
@@ -276,20 +276,20 @@ function BlendedVisual({ src, component, side }: { src?: string, component?: Rea
                 </motion.div>
             ) : null}
             {/* Horizontal Blend (Masked to avoid WebKit transparent color interpolation bug) */}
-            <div 
-                className="absolute inset-0 pointer-events-none z-10 bg-background dark:bg-black"
+            <div
+                className="absolute inset-0 pointer-events-none z-10 bg-background dark:bg-black hidden dark:block"
                 style={{
-                    WebkitMaskImage: side === 'left' 
-                        ? 'linear-gradient(to right, transparent, black)' 
+                    WebkitMaskImage: side === 'left'
+                        ? 'linear-gradient(to right, transparent, black)'
                         : 'linear-gradient(to left, transparent, black)',
-                    maskImage: side === 'left' 
-                        ? 'linear-gradient(to right, transparent, black)' 
+                    maskImage: side === 'left'
+                        ? 'linear-gradient(to right, transparent, black)'
                         : 'linear-gradient(to left, transparent, black)'
                 }}
             />
             {/* Vertical Blend (Masked to avoid WebKit transparent color interpolation bug) */}
-            <div 
-                className="absolute inset-0 pointer-events-none z-10 bg-background dark:bg-black opacity-40"
+            <div
+                className="absolute inset-0 pointer-events-none z-10 bg-background dark:bg-black opacity-40 hidden dark:block"
                 style={{
                     WebkitMaskImage: 'linear-gradient(to bottom, black, transparent, black)',
                     maskImage: 'linear-gradient(to bottom, black, transparent, black)'
@@ -309,7 +309,7 @@ function EditorialContent({ content, index }: { content: any, index: number }) {
                     </span>
                     <div className="h-[1px] w-12 bg-primary/20" />
                 </div>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-tighter leading-tight text-foreground font-sans">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-tighter leading-tight text-foreground font-sans transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:translate-x-6 hover:text-foreground/50 pointer-events-auto cursor-default origin-left">
                     {content.heading}
                 </h2>
                 <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-tight max-w-lg">
@@ -364,7 +364,7 @@ function MagneticTag({ text, index }: { text: string, index: number }) {
         >
             <motion.div
                 style={{ x: springX, y: springY }}
-                className="group/badge relative overflow-hidden text-[10px] md:text-[11px] font-bold uppercase tracking-widest text-foreground/40 border border-foreground/10 px-8 py-4 rounded-xl bg-foreground/[0.02] backdrop-blur-xl hover:border-transparent transition-colors duration-300"
+                className="group/badge relative overflow-hidden text-[10px] md:text-[11px] font-extrabold uppercase tracking-widest text-black dark:text-white border border-foreground/10 px-8 py-4 rounded-xl bg-foreground/[0.02] backdrop-blur-xl hover:border-transparent transition-colors duration-300"
             >
                 <div className={cn("absolute inset-0 translate-y-[101%] group-hover/badge:translate-y-0 transition-transform duration-300 ease-out z-0", color.main)} />
                 <span className={cn("relative z-10 transition-colors duration-300", color.textHover)}>{text}</span>

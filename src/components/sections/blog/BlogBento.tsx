@@ -2,8 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { FiArrowRight, FiMail, FiMapPin, FiGithub, FiFileText } from "react-icons/fi";
-import { SiInstagram } from "react-icons/si";
+import { FiArrowRight, FiMail, FiMapPin, FiGithub, FiLinkedin } from "react-icons/fi";
+import { SiSpotify, SiInstagram } from "react-icons/si";
 import { portfolioData } from "@/data/portfolio";
 
 export const BlogBento = () => {
@@ -46,10 +46,12 @@ export const BlogBento = () => {
                             className="aspect-square bg-gradient-to-br from-blue-500 to-blue-600"
                         >
                             <a
-                                href={`mailto:${portfolioData.personal.email}`}
+                                href={portfolioData.personal.socialLinks.find(s => s.platform === 'LinkedIn')?.url || "https://linkedin.com"}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="grid h-full place-content-center text-2xl text-white"
                             >
-                                <FiMail />
+                                <FiLinkedin />
                             </a>
                         </Block>
 
@@ -86,10 +88,12 @@ export const BlogBento = () => {
                             className="aspect-square bg-gradient-to-br from-green-500 to-green-600"
                         >
                             <a
-                                href="/resume"
+                                href="https://open.spotify.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="grid h-full place-content-center text-2xl text-white"
                             >
-                                <FiFileText />
+                                <SiSpotify />
                             </a>
                         </Block>
                     </div>
@@ -97,10 +101,11 @@ export const BlogBento = () => {
                     {/* About Block */}
                     <Block className="col-span-12 text-base leading-relaxed">
                         <p>
-                            <span className="text-foreground font-medium">My passion is building things that work.</span>{" "}
+                            <span className="text-foreground font-medium">My passion is building innovative solutions.</span>{" "}
                             <span className="text-muted-foreground">
-                                I&apos;m a self-taught developer currently learning Python, HTML, CSS, and Java.
-                                I&apos;m especially interested in artificial intelligence and financial markets, and I build small projects to sharpen my skills as I work toward becoming an AI engineer.
+                                An AI Engineer and Full Stack Developer with expertise in architecting intelligent systems that combine Machine Learning, IoT infrastructure, and Web3 technologies.
+                                Currently focused on advancing AI Agent frameworks and exploring decentralized blockchain applications, bridging the gap between cutting-edge research and practical implementation.
+                                Experienced in designing scalable software architectures and engineering complex technical solutions from concept to deployment.
                             </span>
                         </p>
                     </Block>

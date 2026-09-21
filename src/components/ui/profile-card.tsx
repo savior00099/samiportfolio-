@@ -23,7 +23,7 @@ export function ProfileCard(props: ProfileCardProps) {
     name = "Michael Chen",
     title = "Senior Software Engineer, Cloud Infrastructure",
     description = "Michael Chen is a seasoned software engineer at TechFlow Solutions with over 8 years of experience building scalable cloud infrastructure and microservices. He specializes in DevOps automation and leads the platform engineering team that serves millions of users daily.",
-    imageUrl = "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?q=80&w=600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    imageUrl = "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?q=80&w=600&auto=format&fit=crop&fm=webp&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     githubUrl = "#",
     twitterUrl = "#",
     youtubeUrl = "#",
@@ -43,7 +43,7 @@ export function ProfileCard(props: ProfileCardProps) {
     <div className={cn("w-full max-w-7xl mx-auto px-4 relative", className)}>
       {/* Close Button */}
       {onClose && (
-        <button 
+        <button
           onClick={onClose}
           className="absolute -top-12 right-4 md:-top-4 md:-right-4 z-50 p-2 bg-white dark:bg-zinc-900 rounded-full shadow-xl border border-border hover:scale-110 transition-transform"
         >

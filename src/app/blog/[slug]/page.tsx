@@ -1,66 +1,19 @@
 'use client';
 
-import { use, useState, useMemo } from 'react';
+import { use, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { portfolioData } from '@/data/portfolio';
-import { Clock, Copy, Instagram, Github, BookOpen, Link as LinkIcon, ArrowLeft, Check } from 'lucide-react';
-import { notFound } from 'next/navigation';
+import { Clock, Copy, Linkedin, Github, BookOpen, Link as LinkIcon, ArrowLeft, Check } from 'lucide-react';
+import { notFound, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-// Lightweight parser for generic post.content (used for posts not in the
-// hand-crafted `implementedSlugs` list below). Supports:
-//   ## Heading        -> <h2> with auto id (also used to build the TOC)
-//   **Bold line**      -> standalone bold paragraph
-//   - list item        -> grouped into <ul>
-//   blank line          -> paragraph break
-type ContentBlock =
-    | { type: 'h2'; id: string; text: string }
-    | { type: 'p'; text: string }
-    | { type: 'bold'; text: string }
-    | { type: 'ul'; items: string[] };
-
-function slugifyHeading(text: string): string {
-    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-}
-
-function parsePostContent(content: string): ContentBlock[] {
-    const lines = content.split('\n').map((l) => l.trim());
-    const blocks: ContentBlock[] = [];
-    let listBuffer: string[] = [];
-
-    const flushList = () => {
-        if (listBuffer.length > 0) {
-            blocks.push({ type: 'ul', items: listBuffer });
-            listBuffer = [];
-        }
-    };
-
-    for (const line of lines) {
-        if (!line) continue;
-        if (line.startsWith('## ')) {
-            flushList();
-            const text = line.replace(/^##\s+/, '');
-            blocks.push({ type: 'h2', id: slugifyHeading(text), text });
-        } else if (line.startsWith('- ')) {
-            listBuffer.push(line.replace(/^-\s+/, ''));
-        } else if (/^\*\*.+\*\*$/.test(line)) {
-            flushList();
-            blocks.push({ type: 'bold', text: line.replace(/^\*\*|\*\*$/g, '') });
-        } else {
-            flushList();
-            blocks.push({ type: 'p', text: line });
-        }
-    }
-    flushList();
-    return blocks;
-}
 
 export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
     const t = useTranslations('blog');
+    const router = useRouter();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -69,11 +22,13 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const post = portfolioData.blogs.find((p) => p.slug === slug);
-
-    if (!post) {
-        notFound();
-    }
+    const handleBack = () => {
+        if (typeof window !== 'undefined' && window.history.length > 2) {
+            router.back();
+        } else {
+            router.push('/blog');
+        }
+    };
 
     const implementedSlugs = [
         'future-of-ai-agents',
@@ -87,13 +42,13 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
         'ai-in-healthcare',
         'the-architects-manifesto'
     ];
-    const isHandCrafted = implementedSlugs.includes(slug);
-    const isImplemented = isHandCrafted || !!post.content;
+    const isImplemented = implementedSlugs.includes(slug);
 
-    const genericBlocks = useMemo(() => {
-        if (isHandCrafted || !post.content) return [];
-        return parsePostContent(post.content);
-    }, [isHandCrafted, post.content]);
+    const post = portfolioData.blogs.find((p) => p.slug === slug);
+
+    if (!post) {
+        notFound();
+    }
 
     return (
         <main className="min-h-screen bg-background pb-24 pt-32">
@@ -106,10 +61,10 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                 >
                     <div className="flex items-center gap-4 mb-6">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium hover:text-primary transition-colors">
-                            <Link href="/blog" className="flex items-center gap-2">
+                            <button onClick={handleBack} className="flex items-center gap-2 focus:outline-none">
                                 <ArrowLeft className="w-4 h-4" />
                                 <span>Back</span>
-                            </Link>
+                            </button>
                         </div>
                     </div>
 
@@ -182,11 +137,14 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
                             )}
                         </button>
                         <div className="w-px h-6 bg-border/40 hidden sm:block" />
+                        <Link href="https://linkedin.com/in/syahril-arfian-almazril" target="_blank" className="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/10 rounded-lg hover:bg-primary/10">
+                            <Linkedin className="w-4 h-4" />
+                        </Link>
                         <Link href="https://github.com/savior00099" target="_blank" className="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/10 rounded-lg hover:bg-primary/10">
                             <Github className="w-4 h-4" />
                         </Link>
-                        <Link href="https://www.instagram.com/sam_oazain" target="_blank" className="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/10 rounded-lg hover:bg-primary/10">
-                            <Instagram className="w-4 h-4" />
+                        <Link href="https://medium.com/@arfazrll" target="_blank" className="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/10 rounded-lg hover:bg-primary/10">
+                            <BookOpen className="w-4 h-4" />
                         </Link>
                     </div>
                 </div>
@@ -716,41 +674,6 @@ model.save_pretrained_gguf("model_name", tokenizer, quantization_method = "q4_k_
                                 </>
                             )}
 
-                            {!isHandCrafted && genericBlocks.length > 0 && (
-                                <>
-                                    {genericBlocks.map((block, i) => {
-                                        if (block.type === 'h2') {
-                                            return (
-                                                <h2 key={i} id={block.id} className="text-3xl font-bold mb-6 text-foreground scroll-mt-32">
-                                                    {block.text}
-                                                </h2>
-                                            );
-                                        }
-                                        if (block.type === 'bold') {
-                                            return (
-                                                <p key={i} className="mb-8 font-bold text-foreground">
-                                                    {block.text}
-                                                </p>
-                                            );
-                                        }
-                                        if (block.type === 'ul') {
-                                            return (
-                                                <ul key={i} className="list-disc pl-6 mb-8 space-y-2 text-muted-foreground">
-                                                    {block.items.map((item, j) => (
-                                                        <li key={j}>{item}</li>
-                                                    ))}
-                                                </ul>
-                                            );
-                                        }
-                                        return (
-                                            <p key={i} className="mb-8">
-                                                {block.text}
-                                            </p>
-                                        );
-                                    })}
-                                </>
-                            )}
-
                             {!isImplemented && (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
                                     <div className="p-4 rounded-full bg-secondary/10 text-muted-foreground mb-4">
@@ -925,19 +848,6 @@ model.save_pretrained_gguf("model_name", tokenizer, quantization_method = "q4_k_
                                                 {item.label}
                                             </a>
                                         ))}
-
-                                        {!isHandCrafted && genericBlocks
-                                            .filter((b): b is { type: 'h2'; id: string; text: string } => b.type === 'h2')
-                                            .map((item, index) => (
-                                                <a
-                                                    key={item.id}
-                                                    href={`#${item.id}`}
-                                                    className={`group flex items-center gap-3 text-sm font-medium transition-colors ${index === 0 ? 'text-primary pl-0' : 'text-muted-foreground hover:text-foreground'}`}
-                                                >
-                                                    <span className={`h-px w-4 transition-all ${index === 0 ? 'bg-primary' : 'bg-transparent group-hover:bg-border'}`} />
-                                                    {item.text}
-                                                </a>
-                                            ))}
                                     </div>
                                 </div>
 

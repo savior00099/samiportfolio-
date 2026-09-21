@@ -5,8 +5,6 @@ import { ThemeProvider, I18nProvider, SmoothScrollProvider } from '@/providers';
 
 import '@/styles/globals.css';
 
-export const dynamic = 'force-dynamic';
-
 const inter = Inter({
     subsets: ['latin'],
     variable: '--font-inter',
@@ -87,6 +85,7 @@ export const viewport: Viewport = {
 
 import { ThemeAwareClickSpark } from '@/components/ui/ThemeAwareClickSpark';
 import { ConditionalNavigation } from '@/components/layout/ConditionalNavigation';
+import { ArcPreloaderWrapper } from '@/components/layout/ArcPreloaderWrapper';
 import { ChatBot } from '@/components/layout/ChatBot';
 
 export default async function RootLayout({
@@ -104,9 +103,11 @@ export default async function RootLayout({
                     <I18nProvider locale={locale} messages={messages}>
                         <SmoothScrollProvider>
                             <ThemeAwareClickSpark>
-                                <ConditionalNavigation>
-                                    {children}
-                                </ConditionalNavigation>
+                                <ArcPreloaderWrapper>
+                                    <ConditionalNavigation>
+                                        {children}
+                                    </ConditionalNavigation>
+                                </ArcPreloaderWrapper>
                                 <ChatBot headless />
                             </ThemeAwareClickSpark>
                         </SmoothScrollProvider>

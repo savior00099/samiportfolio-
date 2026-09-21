@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 
 import CardNav from '@/components/ui/CardNav';
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
+import { usePreloadState } from '@/components/ui/arc-preloader-hero';
 
 function Clock() {
     const [time, setTime] = useState<string>('');
@@ -71,6 +72,9 @@ export function Navbar() {
     const [lastScrollY, setLastScrollY] = useState(0);
     const [mounted, setMounted] = useState(false);
     const [currentLocale, setCurrentLocale] = useState('en');
+    
+    // Consume preload state directly from context
+    const { isPreloading: isPreloadActive } = usePreloadState();
 
     const isDark = resolvedTheme === 'dark';
 
@@ -116,6 +120,13 @@ export function Navbar() {
         setIsMenuOpen((prev) => !prev);
     }, []);
 
+    const toggleLocale = useCallback(() => {
+        const newLocale = currentLocale === 'en' ? 'id' : 'en';
+        document.cookie = `locale=${newLocale};path=/;max-age=31536000`;
+        setCurrentLocale(newLocale);
+        window.location.reload();
+    }, [currentLocale]);
+
     const closeMenu = useCallback(() => {
         setIsMenuOpen(false);
     }, []);
@@ -144,7 +155,7 @@ export function Navbar() {
             <motion.nav
                 variants={navVariants}
                 initial="hidden"
-                animate={isVisible || isMenuOpen ? 'visible' : 'hidden'}
+                animate={!isPreloadActive && (isVisible || isMenuOpen) ? 'visible' : 'hidden'}
                 transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                 className="fixed top-0 left-0 right-0 z-[100]"
             >
@@ -201,9 +212,19 @@ export function Navbar() {
                                 className="p-2 md:p-2.5 rounded-full bg-muted/80 hover:bg-muted transition-colors"
                                 aria-label="Focus mode"
                             >
-                                <Link href="https://github.com/savior00099" target="_blank" rel="noopener noreferrer">
+                                <Link href="https://arfazrllworkspace.vercel.app/" target="_blank" rel="noopener noreferrer">
                                     <Focus className="w-4 h-4" />
                                 </Link>
+                            </motion.button>
+
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={toggleLocale}
+                                className="p-2 md:p-2.5 rounded-full bg-muted/80 hover:bg-muted transition-colors"
+                                aria-label="Toggle language"
+                            >
+                                <Globe className="w-4 h-4" />
                             </motion.button>
 
                             {mounted && (
@@ -302,6 +323,12 @@ export function Navbar() {
                                     transition={{ delay: 0.5 }}
                                     className="flex items-center gap-4 mt-12"
                                 >
+                                    <button
+                                        onClick={toggleLocale}
+                                        className="px-6 py-3 rounded-full glass-card text-sm font-medium hover:bg-muted/50 transition-colors"
+                                    >
+                                        {currentLocale === 'en' ? 'English' : 'Indonesia'}
+                                    </button>
                                     {mounted && (
                                         <AnimatedThemeToggler
                                             className="px-6 py-6 glass-card text-sm font-medium hover:bg-muted/50 flex items-center gap-2"

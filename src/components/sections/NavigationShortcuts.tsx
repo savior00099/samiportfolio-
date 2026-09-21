@@ -9,11 +9,22 @@ import { ArrowUpRight } from "lucide-react";
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslations } from 'next-intl';
 
-// Gallery assets for background randomization
 const GALLERY_IMAGES = [
-    '/gallery/sami1.jpg',
-    '/gallery/sami2.png',
-    '/gallery/sami3.png',
+    '/gallery/Foto Utama.webp',
+    '/gallery/FotoSC1.webp',
+    '/gallery/FotoSC2.webp',
+    '/gallery/FotoSC3.webp',
+    '/gallery/FotoSC4.webp',
+    '/gallery/FotoSC5.webp',
+    '/gallery/academicaffairsdivision1.webp',
+    '/gallery/computernetworkpracticumassistant2.webp',
+    '/gallery/dataentryassistant1.webp',
+    '/gallery/delegateaiesecfutureleaders20241.webp',
+    '/gallery/environmentalhygieneteam1.webp',
+    '/gallery/environmentalhygieneteam2.webp',
+    '/gallery/logisticsoperatorcampusexpo20242.webp',
+    '/gallery/researchassistant1.webp',
+    '/gallery/researchassistant2.webp',
 ];
 
 export const NavigationShortcuts = () => {

@@ -16,28 +16,44 @@ interface ProjectData {
 
 const PROJECT_DATA: ProjectData[] = [
   {
-    title: "To-Do List Website",
-    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?q=80&w=2070&auto=format&fit=crop",
-    category: "Web Development",
+    title: "Browser Automation Agent",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop&fm=webp",
+    category: "AI & Automation",
     year: "2026",
-    description: "A clean, responsive to-do list app for organizing daily tasks.",
-    slug: "todo-list-website"
+    description: "AI-driven browser interaction & testing engine.",
+    slug: "browser-automation-agent"
   },
   {
-    title: "Proposal Website",
-    image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop",
+    title: "Swarm AI Blog Writer",
+    image: "/project/swarmaiblogwriter1.webp",
+    category: "AI & Content",
+    year: "2025",
+    description: "Multi-agent orchestration for research-backed content.",
+    slug: "swarm-ai-blog-writer"
+  },
+  {
+    title: "Creative Portfolio Website",
+    image: "/project/creativeportfoliowebsite1.webp",
     category: "Creative Tech",
-    year: "2026",
-    description: "A creatively animated proposal-style website built to practice UI motion.",
-    slug: "proposal-website"
+    year: "2025",
+    description: "Immersive 3D portfolio with WebGL shaders.",
+    slug: "creative-portfolio-website"
   },
   {
-    title: "Animation Website",
-    image: "https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=2070&auto=format&fit=crop",
-    category: "Front-End",
-    year: "2026",
-    description: "A front-end showcase experimenting with CSS/JS animations and transitions.",
-    slug: "animation-website"
+    title: "SNBTIn Platform",
+    image: "/project/snbtinplatformpersiapansnbt20251.webp",
+    category: "EdTech",
+    year: "2025",
+    description: "Leading e-learning platform for SNBT preparation.",
+    slug: "snbtin-platform"
+  },
+  {
+    title: "Terraflow Platform",
+    image: "/project/terraflowplatform1.webp",
+    category: "IoT & Embedded",
+    year: "2025",
+    description: "Enterprise IoT solution for precision agriculture.",
+    slug: "terraflow-platform"
   },
 ];
 

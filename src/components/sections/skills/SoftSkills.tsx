@@ -35,14 +35,14 @@ const fallbackIcons: Record<string, React.ReactNode> = {
 };
 
 const EXTRA_SKILLS = [
-    'Fast Learner',
-    'Team Collaboration',
-    'Problem Solving',
-    'Prompt Engineering',
-    'TradingView Script Development',
-    'Performs Well Under Pressure',
-    'Strategic Thinking',
-    'Adaptability'
+    'Problem-Solving',
+    'Analytical Thinking',
+    'Critical Thinking',
+    'Communication',
+    'Teamwork & Collaboration',
+    'Adaptability',
+    'Attention to Detail',
+    'Leadership'
 ];
 
 export const SoftSkills = () => {

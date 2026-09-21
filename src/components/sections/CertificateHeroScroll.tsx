@@ -36,8 +36,18 @@ interface CertificateHeroScrollProps {
     isLowPowerMode?: boolean;
 }
 
-// No certificates yet — add filenames here (matching files placed in /public/certificate) once available.
-const CERTIFICATE_POOL: string[] = [];
+const CERTIFICATE_POOL = [
+    "Data Analytics on Google Cloud.webp",
+    "Deep Learning Beginner.webp",
+    "Docker, Kubernetes dan DevOps.webp",
+    "Fullstack Programming Untuk Pemula.webp",
+    "Introduction to Generative AI.webp",
+    "Machine Learning Foundations.webp",
+    "Mastering Smart Contract.webp",
+    "Started with Databases.webp",
+    "Supervised Machine Learning Regression and Classification.webp",
+    "elevAIte with Dicoding Program 2025.webp"
+];
 
 const CertificateHeroScroll: FC<CertificateHeroScrollProps> = ({ onDownloadClick, isLowPowerMode: isLowPowerModeProp }) => {
     const spacerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +63,7 @@ const CertificateHeroScroll: FC<CertificateHeroScrollProps> = ({ onDownloadClick
     const createCertItem = useCallback((filename: string): ImageItem => ({
         id: filename.replace(/\s+/g, '-').toLowerCase(),
         src: `/certificate/${filename}`,
-        alt: filename.replace(/\.(pdf|jpg|jpeg|png)$/i, ''),
+        alt: filename.replace(/\.(pdf|jpg|jpeg|png|webp)$/i, ''),
         isPdf: /\.pdf$/i.test(filename)
     }), []);
 

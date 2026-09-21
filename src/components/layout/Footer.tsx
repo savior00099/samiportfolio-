@@ -104,11 +104,11 @@ export function Footer() {
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true,
-                timeZone: 'Asia/Dhaka'
+                timeZone: 'Asia/Jakarta'
             };
             const timeString = new Intl.DateTimeFormat('en-US', options).format(now);
-            // Dhaka is UTC+6
-            setLocalTime(`${timeString} UTC+6`);
+            // Jakarta is UTC+7
+            setLocalTime(`${timeString} UTC+7`);
         };
 
         updateTime();
@@ -161,6 +161,7 @@ export function Footer() {
     const pathname = usePathname();
     const isBlog = pathname?.includes('/blog');
     const isBlogDetail = pathname?.includes('/blog/') && pathname.split('/blog/')[1]?.length > 0;
+    const isGallery = pathname?.includes('/gallery');
 
     const previewSocials = portfolioData.personal.socialLinks
         .filter((s: SocialLink) => s.platform !== 'Discord' && s.platform !== 'Spotify')
@@ -172,13 +173,15 @@ export function Footer() {
         <>
             {/* Compact Footer - Always visible */}
             <footer className={cn(
-                isBlog ? 'absolute bottom-0 w-full border-t-0 pointer-events-none !bg-transparent z-20' : 'relative z-20 mt-auto dark:bg-black',
+                isBlog ? 'absolute bottom-0 w-full border-t-0 pointer-events-none !bg-transparent z-20' :
+                    isGallery ? 'relative z-20 mt-auto !bg-transparent' :
+                        'relative z-20 mt-auto dark:bg-black',
                 isExpanded && 'opacity-0 pointer-events-none'
             )}>
-                <div className={`max-w-[1600px] mx-auto relative z-10 px-6 md:px-12 lg:px-24 py-6 md:py-8 pointer-events-auto ${isBlog ? '!bg-transparent' : ''}`}>
+                <div className={`max-w-[1600px] mx-auto relative z-10 px-6 md:px-12 lg:px-24 py-6 md:py-8 pointer-events-auto ${isBlog || isGallery ? '!bg-transparent' : ''}`}>
                     <div className={`
                         px-6 md:px-8 py-4 md:py-6 transition-all duration-300
-                        ${isBlog
+                        ${isBlog || isGallery
                             ? 'bg-card dark:bg-black/40 dark:backdrop-blur-xl border-2 border-foreground/10 dark:border-white/5 rounded-[2rem] shadow-xl dark:shadow-black/20'
                             : 'glass-card'
                         }
@@ -219,7 +222,7 @@ export function Footer() {
                                             <Fragment key={social.platform}>
                                                 {social.platform === 'Twitter' && (
                                                     <motion.a
-                                                        href="https://github.com/savior00099"
+                                                        href="https://arfazrllworkspace.vercel.app/"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="p-1.5 rounded-full hover:bg-foreground/5 transition-all text-muted-foreground hover:text-foreground hover:scale-110 active:scale-95"
@@ -233,8 +236,8 @@ export function Footer() {
                                                     href={social.platform === 'Twitter' ? undefined : social.url}
                                                     onClick={social.platform === 'Twitter' ? (e) => {
                                                         e.preventDefault();
-                                                        window.dispatchEvent(new CustomEvent('portfolio:toggle-chatbot', { 
-                                                            detail: { x: window.innerWidth / 2, y: window.innerHeight / 2 } 
+                                                        window.dispatchEvent(new CustomEvent('portfolio:toggle-chatbot', {
+                                                            detail: { x: window.innerWidth / 2, y: window.innerHeight / 2 }
                                                         }));
                                                     } : undefined}
                                                     target="_blank"
@@ -373,6 +376,7 @@ export function Footer() {
                                                     )}
                                                 </AnimatePresence>
                                             </div>
+                                            <FooterLink href={portfolioData.personal.socialLinks.find(s => s.platform === 'LinkedIn')?.url || '#'} target="_blank">LinkedIn</FooterLink>
                                             <FooterLink href={portfolioData.personal.socialLinks.find(s => s.platform === 'Instagram')?.url || '#'} target="_blank">Instagram</FooterLink>
                                             <FooterLink href={portfolioData.personal.socialLinks.find(s => s.platform === 'GitHub')?.url || '#'} target="_blank">GitHub</FooterLink>
                                         </FooterColumn>
@@ -382,12 +386,12 @@ export function Footer() {
                                                 {localTime}
                                             </p>
                                             <a
-                                                href="https://www.google.com/maps/place/Dhaka,+Bangladesh"
+                                                href="https://www.google.com/maps/place/Jakarta,+Indonesia"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-zinc-900 dark:text-white text-[1.2vw] min-text-[14px] font-medium tracking-tight hover:text-zinc-500 dark:hover:text-zinc-400 transition-colors inline-block"
                                             >
-                                                Dhaka, Bangladesh
+                                                Jakarta, Indonesia
                                             </a>
                                         </FooterColumn>
 
@@ -407,7 +411,7 @@ export function Footer() {
                                         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                                         className="text-[18vw] font-black leading-none text-zinc-900 dark:text-white tracking-tighter select-none text-center"
                                     >
-                                        SAMI
+                                        ARFAZRLL
                                     </motion.h2>
                                 </div>
                             </div>

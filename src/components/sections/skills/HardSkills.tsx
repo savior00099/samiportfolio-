@@ -2,29 +2,9 @@
 
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { portfolioData } from "@/data/portfolio";
 import { ChevronDown, ChevronUp } from "lucide-react";
-
-// Manual overrides for skill names that don't map 1:1 to a techStack/tools entry.
-const SKILL_ICON_OVERRIDES: Record<string, string> = {
-  'artificial intelligence': 'https://cdn.jsdelivr.net/npm/simple-icons@11/icons/openai.svg',
-  'tradingview pine script': 'https://cdn.jsdelivr.net/npm/simple-icons@11/icons/tradingview.svg',
-  'stock trading': 'https://cdn.jsdelivr.net/npm/simple-icons@11/icons/tradingview.svg',
-  'prompt engineering': 'https://cdn.jsdelivr.net/npm/simple-icons@11/icons/openai.svg',
-};
-
-const findSkillIcon = (skillName: string): string | null => {
-  const key = skillName.toLowerCase();
-  if (SKILL_ICON_OVERRIDES[key]) return SKILL_ICON_OVERRIDES[key];
-
-  const allIconSources = [...portfolioData.techStack, ...portfolioData.tools];
-  const match = allIconSources.find(
-    (item) => item.name.toLowerCase() === key || item.name.toLowerCase().includes(key) || key.includes(item.name.toLowerCase())
-  );
-  return match?.icon ?? null;
-};
 
 export const HardSkills = () => {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
@@ -240,40 +220,19 @@ export const HardSkills = () => {
 };
 
 const SkillCard = ({ skill, delay }: { skill: any, delay: number }) => {
-  const iconUrl = findSkillIcon(skill.name);
-
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.95, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95, y: -10 }}
-      whileHover={{ y: -4 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.3, delay: delay }}
       className="shrink-0 p-5 md:p-6 bg-white dark:bg-[#141414] border border-black/5 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 rounded-2xl transition-all duration-300 group shadow-sm hover:shadow-lg flex flex-col justify-start w-full relative overflow-hidden"
     >
       <div className="mb-4 relative z-10">
         <div className="flex flex-wrap justify-between items-start mb-4 gap-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {iconUrl && (
-              <motion.div
-                className="shrink-0 w-6 h-6 md:w-7 md:h-7 rounded-md bg-black/5 dark:bg-white/5 flex items-center justify-center p-1"
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: delay }}
-              >
-                <Image
-                  src={iconUrl}
-                  alt={skill.name}
-                  width={20}
-                  height={20}
-                  className="w-full h-full object-contain dark:invert-0"
-                  unoptimized
-                />
-              </motion.div>
-            )}
-            <h5 className="font-sans font-bold text-base tracking-tight text-foreground/90 leading-tight group-hover:text-primary transition-colors truncate">{skill.name}</h5>
-          </div>
+          <h5 className="font-sans font-bold text-base tracking-tight text-foreground/90 leading-tight group-hover:text-primary transition-colors">{skill.name}</h5>
           <span className={cn(
             "text-[10px] font-mono font-bold px-2 py-1 rounded-full uppercase tracking-wider whitespace-nowrap transition-all duration-300 border",
             skill.level === 'beginner' && "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",

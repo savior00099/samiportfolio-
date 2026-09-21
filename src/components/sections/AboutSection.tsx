@@ -25,45 +25,63 @@ import ScrollAdventure from "@/components/ui/animated-scroll";
 import Bucket from "@/components/ui/bucket";
 import { ArgentLoopInfiniteSlider } from "@/components/ui/argent-loop-infinite-slider";
 import { HorizontalTimeline } from "@/components/ui/horizontal-timeline";
+import { CertificateShowcase } from "@/components/ui/certificate-marquee";
 import { GitHubShowcase } from "@/components/ui/github-showcase";
 import { WakaTimeShowcase } from "@/components/ui/wakatime-showcase";
 import { ShowcaseStack } from "@/components/ui/showcase-stack";
 
-interface ShowcaseMember {
-    id: string;
-    name: string;
-    role: string;
-    description?: string;
-    period?: string;
-    image: string;
-    social?: { website?: string };
-}
-
-const showcaseMembers: ShowcaseMember[] = [
-    {
-        id: 'ssc',
-        name: 'Valum Ataur Rahman Khan School & College',
-        role: 'Secondary School Certificate',
-        description: 'Science Major — GPA 4.61. Developed a strong foundation in Mathematics, Physics, and ICT.',
-        period: 'SSC 2023',
-        image: '/education/valum-ataur-rahman-khan-school.png',
-    },
-    {
-        id: 'hsc',
-        name: 'Kazi Azim Uddin College & University',
-        role: 'Higher Secondary Certificate',
-        description: 'Science Major — GPA 3.00. Strong in ICT, with a developing analytical foundation in Mathematics and Physics.',
-        period: 'HSC 2025',
-        image: '/education/kazi-azim-uddin-college-1.png',
-    },
-    {
-        id: 'ai-engineering',
-        name: 'AI Engineering — Self-Directed',
-        role: 'Continuous Learning',
-        description: 'Currently pursuing AI Engineering through continuous self-learning and project-based development — building real AI and software projects along the way.',
-        period: '2025–Present',
-        image: '/assets/ai-tech-stack.png',
-    },
+const showcaseMembers = [
+    // 1. Cyber Physical Systems Laboratory
+    ...portfolioData.experiences.filter(exp => exp.id === 'prof-7').map(exp => ({
+        id: exp.id,
+        name: "Cyber Physical Systems Laboratory",
+        role: exp.position.replace(' (Contract-Based)', ''),
+        description: exp.description,
+        period: "August 2025 - Present",
+        image: "/journey/researchassistant2.webp",
+        social: exp.externalLink ? { website: Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink } : undefined
+    })),
+    // 2. HUMIC Engineering
+    ...portfolioData.experiences.filter(exp => exp.id === 'prof-3').map(exp => ({
+        id: exp.id,
+        name: "HUMIC Engineering",
+        role: exp.position,
+        description: exp.description,
+        period: "September 2025 - December 2025",
+        image: "/journey/aideveloperintern1.webp",
+        social: exp.externalLink ? { website: Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink } : undefined
+    })),
+    // 3. Informatics Laboratory, Telkom University
+    ...portfolioData.experiences.filter(exp => exp.id === 'prof-6').map(exp => ({
+        id: exp.id,
+        name: exp.company,
+        role: exp.position.replace(' (Contract-Based)', ''),
+        description: exp.description,
+        period: "September 2025 - January 2026",
+        image: "/journey/computernetworkpracticumassistant2.webp",
+        social: exp.externalLink ? { website: Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink } : undefined
+    })),
+    // 4. Digistar Club by Telkom Indonesia
+    ...portfolioData.experiences.filter(exp => exp.id === 'lead-2').map(exp => ({
+        id: exp.id,
+        name: exp.company,
+        role: exp.position,
+        description: exp.description,
+        period: "October 2025 - December 2025",
+        image: "/journey/chiefcommittee1.webp",
+        social: exp.externalLink ? { website: Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink } : undefined
+    })),
+    // 5. Food and Agriculture Office of Bandung City
+    ...portfolioData.experiences.filter(exp => exp.id === 'prof-8').map(exp => ({
+        id: exp.id,
+        name: "Food and Agriculture Office of Bandung City",
+        role: exp.position,
+        description: exp.description,
+        period: "July - September 2025",
+        image: "/journey/dataentryassistant1.webp",
+        social: exp.externalLink ? { website: Array.isArray(exp.externalLink) ? exp.externalLink[0] : exp.externalLink } : undefined
+    })),
+    // 6. View more
     {
         id: 'view-more',
         name: 'View more',
@@ -74,9 +92,21 @@ const showcaseMembers: ShowcaseMember[] = [
 ];
 
 const GALLERY_IMAGES = [
-    "/gallery/sami1.jpg",
-    "/gallery/sami2.png",
-    "/gallery/sami3.png"
+    "/gallery/Foto Utama.webp",
+    "/gallery/FotoSC1.webp",
+    "/gallery/FotoSC2.webp",
+    "/gallery/FotoSC3.webp",
+    "/gallery/FotoSC4.webp",
+    "/gallery/FotoSC5.webp",
+    "/gallery/academicaffairsdivision1.webp",
+    "/gallery/computernetworkpracticumassistant2.webp",
+    "/gallery/dataentryassistant1.webp",
+    "/gallery/delegateaiesecfutureleaders20241.webp",
+    "/gallery/environmentalhygieneteam1.webp",
+    "/gallery/environmentalhygieneteam2.webp",
+    "/gallery/logisticsoperatorcampusexpo20242.webp",
+    "/gallery/researchassistant1.webp",
+    "/gallery/researchassistant2.webp"
 ];
 
 const AboutLeadInImageStack = () => {
@@ -154,9 +184,20 @@ const AboutLeadIn = () => {
         <div className="w-full max-w-[1650px] mx-auto px-6 py-6 flex justify-center items-center">
             {/* The Reference Card Container (Gambar 1 Style with Dark/Light Support) */}
             <motion.div
-                initial="rest"
+                initial="hidden"
+                whileInView="show"
                 whileHover="hover"
-                className="relative w-full bg-white dark:bg-black border border-red-600/20 dark:border-red-600/40 p-6 md:p-12 lg:p-16 overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-500"
+                viewport={{ once: false, amount: 0.2 }}
+                variants={{
+                    hidden: { opacity: 0, y: 80, scale: 0.96 },
+                    show: { 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1, 
+                        transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } 
+                    }
+                }}
+                className="relative w-full bg-white dark:bg-black border border-red-600/20 dark:border-red-600/40 p-6 md:p-12 lg:p-16 overflow-hidden shadow-xl dark:shadow-2xl transition-colors duration-500 group"
             >
 
                 {/* 1. Grid Background Overlay (Dynamic Colors) */}
@@ -172,7 +213,8 @@ const AboutLeadIn = () => {
                 <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
                     <motion.div
                         variants={{
-                            rest: { left: "-150%" },
+                            hidden: { left: "-150%" },
+                            show: { left: "-150%" },
                             hover: { left: "150%" }
                         }}
                         transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
@@ -189,12 +231,7 @@ const AboutLeadIn = () => {
                     </div>
 
                     {/* Massive Typography - Quote Style */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                        className="mb-8 md:mb-14 relative cursor-default"
-                    >
+                    <div className="mb-8 md:mb-14 relative cursor-default">
                         {/* Original Text with glow */}
                         <h2 className="text-[32px] sm:text-[48px] md:text-[64px] lg:text-[76px] xl:text-[88px] font-bold tracking-tight leading-[0.92] text-zinc-900 dark:text-white transition-all duration-700 group-hover:drop-shadow-[0_0_15px_rgba(0,0,0,0.1)] dark:group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                             <span className="text-zinc-300 dark:text-zinc-700 mr-2 transition-colors duration-700 group-hover:text-zinc-400 dark:group-hover:text-zinc-500">"</span>
@@ -202,7 +239,7 @@ const AboutLeadIn = () => {
                             <span className="font-serif italic font-normal text-zinc-900 dark:text-white lowercase opacity-90 transition-opacity duration-700 group-hover:opacity-100">{t('leadIn.headlineSoftware')}</span>
                             <span className="text-zinc-300 dark:text-zinc-700 ml-1 transition-colors duration-700 group-hover:text-zinc-400 dark:group-hover:text-zinc-500">."</span>
                         </h2>
-                    </motion.div>
+                    </div>
 
                     {/* Detail Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 border-t border-zinc-100 dark:border-zinc-900 pt-8 md:pt-12">
@@ -405,21 +442,14 @@ const AuditFunnel = () => {
 
     useEffect(() => {
         const galleryItems = [
-            "/gallery/Foto Utama.jpeg",
-            "/gallery/FotoSC1.jpeg",
-            "/gallery/FotoSC2.jpeg",
-            "/gallery/FotoSC3.jpeg",
-            "/gallery/FotoSC4.jpeg",
-            "/gallery/FotoSC5.jpeg",
-            "/gallery/academicaffairsdivision1.jpg",
-            "/gallery/computernetworkpracticumassistant2.jpg",
-            "/gallery/dataentryassistant1.jpg",
-            "/gallery/delegateaiesecfutureleaders20241.jpg",
-            "/gallery/environmentalhygieneteam1.jpg",
-            "/gallery/environmentalhygieneteam2.jpg",
-            "/gallery/logisticsoperatorcampusexpo20242.jpg",
-            "/gallery/researchassistant1.jpg",
-            "/gallery/researchassistant2.jpg"
+            "/feature/icons/image1.webp",
+            "/feature/icons/image2.webp",
+            "/feature/icons/image3.webp",
+            "/feature/icons/image4.webp",
+            "/feature/icons/image5.webp",
+            "/feature/icons/image6.webp",
+            "/feature/icons/image7.webp",
+            "/feature/icons/image8.webp"
         ];
         // Shuffle and pick 8 random images for the trail to avoid overwhelming the DOM
         const shuffled = [...galleryItems].sort(() => 0.5 - Math.random());
@@ -550,6 +580,7 @@ const ScrollHijackSection = () => {
 };
 
 export default function AboutSection() {
+    console.log('SHOWCASE MEMBERS:', showcaseMembers.map(m => m.id));
     const containerRef = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -605,21 +636,19 @@ export default function AboutSection() {
                                     isEnd: member.id === 'view-more',
                                     period: 'period' in member ? member.period : undefined,
                                     content: member.id === 'view-more' ? (
-                                        <div className="relative flex items-center h-[140px] w-[200px]">
-                                            <div className="absolute left-6 transition-all duration-500 opacity-100 group-hover:opacity-0 group-hover:scale-50 z-20">
-                                                <div className="p-4 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm flex items-center justify-center">
-                                                    <ArrowUpRight className="w-8 h-8 text-neutral-600 dark:text-neutral-400" />
+                                        <Link
+                                            href={member.social?.website || '/experience'}
+                                            className="relative flex items-center h-[140px] w-[250px] z-30"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="p-4 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm flex items-center justify-center transition-all duration-500 group-hover:bg-primary group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(var(--primary),0.3)]">
+                                                    <ArrowUpRight className="w-8 h-8 text-neutral-600 dark:text-neutral-400 transition-all duration-500 group-hover:text-primary-foreground group-hover:rotate-45 group-hover:scale-110" />
                                                 </div>
-                                            </div>
-                                            <Link
-                                                href={member.social?.website || '/experience'}
-                                                className="absolute left-0 flex flex-col items-center justify-center p-6 bg-white/40 dark:bg-black/30 border border-white/60 dark:border-white/10 rounded-2xl backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] w-[200px] h-[140px] opacity-0 scale-95 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto transition-all duration-500 z-30 group/btn hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:border-white/80 dark:hover:border-white/20 hover:bg-white/50 dark:hover:bg-black/40"
-                                            >
-                                                <span className="text-base font-bold text-center text-neutral-900 dark:text-white drop-shadow-sm">
-                                                    Explore all experiences
+                                                <span className="text-lg md:text-xl font-bold text-neutral-900 dark:text-white opacity-0 -translate-x-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0 whitespace-nowrap drop-shadow-sm">
+                                                    View more
                                                 </span>
-                                            </Link>
-                                        </div>
+                                            </div>
+                                        </Link>
                                     ) : (
                                         <div className="flex flex-col gap-4 w-[320px] md:w-[400px] border border-neutral-200 dark:border-neutral-800 p-6 rounded-2xl bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md shadow-xl mt-4">
                                             <div className="flex flex-col gap-2">
@@ -656,7 +685,10 @@ export default function AboutSection() {
                             </div>
                         </motion.div>
 
-                        {/* Certificate Showcase Section - hidden until certificates are added */}
+                        {/* Certificate Showcase Section */}
+                        <div className="w-full mt-8 md:mt-12">
+                            <CertificateShowcase />
+                        </div>
 
                         {/* Stacking Card Showcases */}
                         <ShowcaseStack>

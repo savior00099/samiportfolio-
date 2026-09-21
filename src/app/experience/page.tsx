@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from "next/image";
 import { useTranslations } from 'next-intl';
@@ -28,10 +29,11 @@ import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
 import { Experience, Education } from '@/types';
 
-const ExperienceMarquee = dynamic(() => import('../../components/sections/ExperienceMarquee'), { ssr: true });
-const ExperienceStickyScroll = dynamic(() => import('../../components/sections/ExperienceStickyScroll'), { ssr: true });
+import ExperienceMarquee from '../../components/sections/ExperienceMarquee';
+import ExperienceStickyScroll from '../../components/sections/ExperienceStickyScroll';
 import { Timeline } from '@/components/ui/timeline';
 import { InnovativeExperienceHero } from '@/components/sections/InnovativeExperienceHero';
+import { DeferredMount } from '@/components/ui/DeferredMount';
 
 type TabType = 'education' | 'journey' | 'experience';
 
@@ -39,7 +41,7 @@ const highlightContent = {
     education: {
         title: "Building the Future",
         highlight: "Through Knowledge",
-        description: "Every line of code starts with understanding. My academic foundation in Science shapes how I approach problems with systematic thinking."
+        description: "Every line of code starts with understanding. My academic journey at Telkom University shapes how I approach complex problems with systematic thinking."
     },
     journey: {
         title: "Crafting Experiences",
@@ -62,7 +64,7 @@ function ExperienceHighlightSection({ type, isLowPowerMode }: { type: TabType; i
 
     return (
         <div className="mt-6">
-            <InnovativeExperienceHero 
+            <InnovativeExperienceHero
                 type={type}
                 title={content.title}
                 highlight={content.highlight}
@@ -89,13 +91,15 @@ interface TabItem {
     description: string;
 }
 
+import MagneticEffect from '@/components/ui/MagneticEffect';
+
 function ExperienceTabSlider({ isLowPowerMode }: { isLowPowerMode: boolean }) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [activeTab, setActiveTab] = useState<number>(1);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
     const tabs: TabItem[] = [
-        { id: 'education', label: 'Education', description: 'Building strong foundations through academic focus in Science, from SSC through HSC.' },
+        { id: 'education', label: 'Education', description: 'Building strong foundations through academic excellence at Telkom University and SMAN 88 Jakarta.' },
         { id: 'journey', label: 'Journey', description: 'A timeline of roles, responsibilities, and professional growth across various organizations.' },
         { id: 'experience', label: 'Experience', description: 'Detailed breakdown of work experiences with project highlights and achievements.' },
     ];
@@ -175,24 +179,25 @@ function ExperienceTabSlider({ isLowPowerMode }: { isLowPowerMode: boolean }) {
                 </div>
 
                 {/* Tab Buttons - Horizontal Scroll on Mobile, Centered on Tablet+ */}
-                <div className="flex flex-nowrap sm:flex-wrap justify-start sm:justify-center gap-2 overflow-x-auto pb-4 sm:pb-0 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex flex-nowrap sm:flex-wrap justify-start sm:justify-center gap-2 overflow-x-auto py-4 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                     {tabs.map((tab, index) => (
-                        <button
-                            key={index}
-                            className={`m-1.5 inline-flex justify-center items-center gap-2.5 rounded-full px-5 py-2.5 text-sm whitespace-nowrap shadow-sm transition-colors duration-150 focus-visible:ring focus-visible:ring-cyan-300 focus-visible:outline-none sm:px-6 sm:py-3 sm:text-base ${activeTab === index
-                                ? "bg-cyan-500 text-white shadow-cyan-950/10"
-                                : "bg-white dark:bg-neutral-800 text-cyan-900 dark:text-cyan-100 hover:bg-cyan-100 dark:hover:bg-neutral-700"
-                                }`}
-                            onClick={() => {
-                                setActiveTab(index);
-                                if (index !== 2) setSelectedCategory(null);
-                            }}
-                        >
-                            {tab.id === 'education' && <GraduationCap className="w-5 h-5" />}
-                            {tab.id === 'journey' && <Briefcase className="w-5 h-5" />}
-                            {tab.id === 'experience' && <Rocket className="w-5 h-5" />}
-                            <span>{tab.label}</span>
-                        </button>
+                        <MagneticEffect key={index}>
+                            <button
+                                className={`group m-1.5 inline-flex justify-center items-center gap-2.5 rounded-full px-5 py-2.5 text-sm whitespace-nowrap shadow-sm transition-all duration-300 ease-out focus-visible:ring focus-visible:ring-cyan-300 focus-visible:outline-none sm:px-6 sm:py-3 sm:text-base hover:-translate-y-1 hover:shadow-lg ${activeTab === index
+                                    ? "bg-cyan-500 text-white shadow-cyan-500/25"
+                                    : "bg-white dark:bg-neutral-800/80 backdrop-blur-sm text-cyan-900 dark:text-cyan-100 hover:bg-cyan-50 dark:hover:bg-neutral-700/80 border border-transparent dark:border-white/5"
+                                    }`}
+                                onClick={() => {
+                                    setActiveTab(index);
+                                    if (index !== 2) setSelectedCategory(null);
+                                }}
+                            >
+                                {tab.id === 'education' && <GraduationCap className="w-5 h-5 transition-transform group-hover:scale-110" />}
+                                {tab.id === 'journey' && <Briefcase className="w-5 h-5 transition-transform group-hover:scale-110" />}
+                                {tab.id === 'experience' && <Rocket className="w-5 h-5 transition-transform group-hover:scale-110" />}
+                                <span className="font-medium">{tab.label}</span>
+                            </button>
+                        </MagneticEffect>
                     ))}
                 </div>
             </div>
@@ -405,33 +410,41 @@ export default function ExperiencePage() {
             {/* Smooth Scroll Hero Section */}
             <SmoothScrollHero />
 
-            <FloatingShape
-                className="w-[min(500px,80vw)] h-[min(500px,80vw)] -top-20 -right-40"
-                gradient="radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)"
-                isLowPowerMode={isLowPowerMode}
-            />
-            <FloatingShape
-                className="w-[min(400px,70vw)] h-[min(400px,70vw)] bottom-40 -left-20"
-                gradient="radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%)"
-                delay={3}
-                isLowPowerMode={isLowPowerMode}
-            />
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+                <FloatingShape
+                    className="w-[min(500px,80vw)] h-[min(500px,80vw)] -top-20 -right-40"
+                    gradient="radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%)"
+                    isLowPowerMode={isLowPowerMode}
+                />
+                <FloatingShape
+                    className="w-[min(400px,70vw)] h-[min(400px,70vw)] bottom-40 -left-20"
+                    gradient="radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%)"
+                    delay={3}
+                    isLowPowerMode={isLowPowerMode}
+                />
+            </div>
 
-            <motion.div
-                initial={{ opacity: 0, y: isLowPowerMode ? 0 : 60 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-20"
-            >
-
+            <DeferredMount>
                 {/* 1. Work Experience Gallery Marquee */}
-                <div className="w-screen relative left-1/2 -translate-x-1/2 mb-20 -mt-10 md:-mt-20">
+                <motion.div
+                    initial={{ opacity: 0, y: isLowPowerMode ? 0 : 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                    className="w-full relative z-10 pt-20 mb-20 -mt-10 md:-mt-20 overflow-hidden"
+                >
                     <ExperienceMarquee />
-                </div>
+                </motion.div>
 
-                {/* 2. Tab Slider Section (Testimonial-style UI) */}
-                <ExperienceTabSlider isLowPowerMode={isLowPowerMode} />
-            </motion.div>
+                <motion.div
+                    initial={{ opacity: 0, y: isLowPowerMode ? 0 : 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+                >
+                    {/* 2. Tab Slider Section (Testimonial-style UI) */}
+                    <ExperienceTabSlider isLowPowerMode={isLowPowerMode} />
+                </motion.div>
+            </DeferredMount>
         </motion.div>
     );
 }
@@ -459,14 +472,20 @@ function CollapsibleExperienceCard({ exp, idx, isLowPowerMode }: { exp: Experien
             initial={{ opacity: 0, y: isLowPowerMode ? 0 : 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: isLowPowerMode ? 0 : idx * 0.1 }}
-            className={`group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[2rem] transition-all duration-500 overflow-hidden ${isExpanded ? 'shadow-2xl dark:shadow-neutral-900/50 ring-1 ring-neutral-200 dark:ring-neutral-700' : 'hover:shadow-2xl dark:hover:shadow-neutral-900/50 hover:-translate-y-1'}`}
+            className={cn(
+                "group relative bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[2rem] transition-all duration-500 overflow-hidden",
+                "hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.2)] dark:hover:shadow-[0_0_40px_-10px_rgba(59,130,246,0.2)] hover:border-blue-500/50 dark:hover:border-blue-400/50 hover:z-10",
+                isExpanded ? "shadow-2xl ring-1 ring-neutral-200 dark:ring-neutral-700" : ""
+            )}
         >
-            <div className="p-6 md:p-8 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+            {/* Animated Inner Glow Effect on Hover */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-700 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-500/10 via-transparent to-transparent" />
+
+            <div className="p-6 md:p-8 cursor-pointer relative z-10" onClick={() => setIsExpanded(!isExpanded)}>
                 <div className="flex gap-4 md:gap-6 items-start">
-                    {/* Logo (Left Side) - Always visible */}
-                    <div className="w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-black rounded-2xl flex items-center justify-center shrink-0 border border-neutral-100 dark:border-neutral-800 p-2 shadow-sm">
+                    <div className={cn("w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0 border border-neutral-100 dark:border-neutral-800 overflow-hidden relative shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3 group-hover:shadow-lg", exp.logoBg || "bg-white")}>
                         {exp.logo ? (
-                            <Image src={exp.logo} alt={exp.company} width={48} height={48} className="object-contain" unoptimized loading="lazy" />
+                            <Image src={exp.logo} alt={exp.company} fill className="object-contain" unoptimized loading="lazy" />
                         ) : (
                             <Briefcase className="w-8 h-8 text-neutral-300" />
                         )}
@@ -493,7 +512,7 @@ function CollapsibleExperienceCard({ exp, idx, isLowPowerMode }: { exp: Experien
                         {/* Metadata Row (Reference Style) */}
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-500 dark:text-neutral-500 font-medium">
                             <span className="text-neutral-700 dark:text-neutral-300">
-                                {formatDate(exp.startDate)} — {exp.endDate ? formatDate(exp.endDate) : t('present')}
+                                {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : t('present')}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
                             <span className="text-neutral-400 dark:text-neutral-600">
@@ -515,8 +534,8 @@ function CollapsibleExperienceCard({ exp, idx, isLowPowerMode }: { exp: Experien
 
                         {/* Show Detail Action (Collapsed Only) */}
                         {!isExpanded && (
-                            <div className="pt-2 flex items-center gap-1 text-sm font-medium text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
-                                <ChevronRight className="w-4 h-4" />
+                            <div className="pt-2 flex items-center gap-1 text-sm font-medium text-neutral-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                                 <span>{t('showDetail')}</span>
                             </div>
                         )}
@@ -589,19 +608,6 @@ function CollapsibleExperienceCard({ exp, idx, isLowPowerMode }: { exp: Experien
                                 </div>
                             )}
 
-                            {/* Gallery Images */}
-                            {exp.galleryImages && exp.galleryImages.length > 0 && (
-                                <div>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {exp.galleryImages.map((img, i) => (
-                                            <div key={i} className="relative aspect-video rounded-xl overflow-hidden border border-neutral-100 dark:border-neutral-800">
-                                                <Image src={img} alt={`${exp.company} photo ${i + 1}`} fill unoptimized className="object-cover" />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
                             {/* Skills (Full List in Expanded View) */}
                             <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800/50">
                                 <div className="flex flex-wrap gap-2">
@@ -654,7 +660,7 @@ const LinkPreviewCard = ({ url, title, id, logo }: { url: string; title?: string
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            layoutId={`${id}-link-card`}
+            layoutId={`${id}-link-card-${url}`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
@@ -676,8 +682,8 @@ const LinkPreviewCard = ({ url, title, id, logo }: { url: string; title?: string
                     </p>
                 </div>
                 {logo && (
-                    <div className="shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700 overflow-hidden p-2">
-                        <Image src={logo} alt="Logo" width={64} height={64} className="w-full h-full object-contain lowercase" unoptimized loading="lazy" />
+                    <div className="shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 overflow-hidden relative shadow-sm">
+                        <Image src={logo} alt="Logo" fill className="object-contain" unoptimized loading="lazy" />
                     </div>
                 )}
             </div>
@@ -695,10 +701,15 @@ const LinkPreviewCard = ({ url, title, id, logo }: { url: string; title?: string
     );
 };
 
-function TimelineGallery({ images, id, title, externalLink, logo }: { images: string[]; id: string; title?: string; externalLink?: string; logo?: string }) {
+function TimelineGallery({ images, id, title, externalLink, logo }: { images: string[]; id: string; title?: string; externalLink?: string | string[]; logo?: string }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleImageError = (index: number) => {
         setFailedImages(prev => new Set(prev).add(index));
@@ -737,9 +748,11 @@ function TimelineGallery({ images, id, title, externalLink, logo }: { images: st
     const allImages = verifiedImages.map((src, i) => ({ src, index: i, type: 'image' as const }));
     const validImages = allImages.filter(img => !failedImages.has(img.index));
 
+    const externalLinksArray = Array.isArray(externalLink) ? externalLink : (externalLink ? [externalLink] : []);
+
     const galleryItems = [
         ...validImages,
-        ...(externalLink ? [{ type: 'link' as const, src: externalLink, index: validImages.length }] : [])
+        ...externalLinksArray.map((link, idx) => ({ type: 'link' as const, src: link, index: validImages.length + idx }))
     ];
 
     const visibleItems = isExpanded ? galleryItems.slice(0, 4) : galleryItems.slice(0, 2);
@@ -775,7 +788,7 @@ function TimelineGallery({ images, id, title, externalLink, logo }: { images: st
                             </motion.div>
                         ) : (
                             <LinkPreviewCard
-                                key={`${id}-link-preview`}
+                                key={`${id}-link-preview-${item.index}`}
                                 url={item.src}
                                 title={title}
                                 id={id}
@@ -799,140 +812,158 @@ function TimelineGallery({ images, id, title, externalLink, logo }: { images: st
             )}
 
             {/* Lightbox Overlay */}
-            <AnimatePresence>
-                {selectedImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setSelectedImage(null)}
-                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 cursor-zoom-out"
-                    >
+            {isMounted && createPortal(
+                <AnimatePresence>
+                    {selectedImage && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
-                        />
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="relative max-w-4xl w-[90vw] md:w-auto h-fit max-h-[80vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={() => setSelectedImage(null)}
+                            className="fixed inset-0 z-[9999] flex items-center justify-center cursor-zoom-out"
                         >
-                            <img
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 bg-black/80 backdrop-blur-md"
+                            />
+                            <motion.img
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
                                 src={selectedImage}
                                 alt="Gallery expanded"
-                                className="w-full h-full object-contain"
+                                className="relative max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain rounded-2xl shadow-2xl ring-1 ring-white/10"
+                                onClick={(e) => e.stopPropagation()}
                             />
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 }
 
-interface JourneyMilestone {
-    year: string;
-    institution: string;
-    tag: string;
-    major: string;
-    highlights: string[];
-    gpa?: string;
-    batch?: string;
-    image?: string;
-    isOngoing?: boolean;
-}
-
-const journeyMilestones: JourneyMilestone[] = [
-    {
-        year: '2022–2023',
-        institution: 'Valum Ataur Rahman Khan School & College',
-        tag: 'Secondary School Certificate',
-        major: 'Science Major',
-        highlights: ['Strong in Physics, Mathematics, and ICT'],
-        gpa: 'GPA: 4.61',
-        batch: 'SSC Batch 2023',
-        image: '/education/valum-ataur-rahman-khan-school.png',
-    },
-    {
-        year: '2024–2025',
-        institution: 'Kazi Azim Uddin College & University',
-        tag: 'Higher Secondary Certificate',
-        major: 'Science Major',
-        highlights: ['Strong in ICT'],
-        gpa: 'GPA: 3.00',
-        batch: 'HSC Batch 2025',
-        image: '/education/kazi-azim-uddin-college-1.png',
-    },
-    {
-        year: '2025–Present',
-        institution: 'AI Engineering — Self-Directed',
-        tag: 'Continuous Learning',
-        major: 'Applied AI & Software Development',
-        highlights: ['Currently pursuing AI Engineering through continuous self-learning and project-based development.'],
-        isOngoing: true,
-    },
-];
-
 function ExperienceTimeline({ isLowPowerMode }: { isLowPowerMode: boolean }) {
-    const timelineData = journeyMilestones.map((m) => ({
-        title: m.year,
+    const experiences = portfolioData.experiences;
+
+    const groupedExperiences = useMemo(() => {
+        const groups: { [key: string]: Experience[] } = {};
+
+        const sortedAll = [...experiences].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+        sortedAll.forEach(exp => {
+            const year = new Date(exp.startDate).getFullYear().toString();
+            if (!groups[year]) {
+                groups[year] = [];
+            }
+            groups[year].push(exp);
+        });
+
+        return Object.keys(groups)
+            .sort((a, b) => parseInt(b) - parseInt(a))
+            .map(year => ({
+                title: year,
+                experiences: groups[year]
+            }));
+    }, [experiences]);
+
+    const timelineData = groupedExperiences.map(group => ({
+        title: group.title,
         content: (
-            <div className="relative pl-8 border-l-2 border-neutral-200 dark:border-neutral-800">
-                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-neutral-200 dark:bg-neutral-800 border-2 border-white dark:border-black" />
+            <div className="space-y-12">
+                {group.experiences.map((exp) => {
+                    const logoSrc = exp.logo || "";
+                    const needsInvertInDarkMode = logoSrc.includes("McKinsey") || 
+                                                logoSrc.includes("TelkomUniversity") || 
+                                                logoSrc.includes("softagelogo") || 
+                                                logoSrc.includes("dinas-pangan") ||
+                                                logoSrc.includes("yotlogo") ||
+                                                logoSrc.includes("youth-ranger") ||
+                                                logoSrc.includes("aiesec") ||
+                                                logoSrc.includes("microsot") ||
+                                                logoSrc.includes("dicoding") ||
+                                                logoSrc.includes("cisometric");
+                    
+                    const needsWhiteBgRemovalInDarkMode = logoSrc.includes("logobei") || logoSrc.includes("birulangit");
+                    const needsInvertInLightMode = logoSrc.includes("flyrank") || logoSrc.includes("FlyRank");
 
-                <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h3 className="text-xl font-bold text-neutral-900 dark:text-white leading-tight">
-                            {m.institution}
-                        </h3>
-                        <p className="text-lg font-medium text-primary">
-                            {m.tag}
-                        </p>
-                    </div>
-                    {(m.gpa || m.batch) && (
-                        <div className="flex flex-col sm:items-end gap-2">
-                            {m.batch && (
+                    let specificClasses = "";
+                    if (needsInvertInDarkMode) specificClasses = "dark:invert";
+                    if (needsWhiteBgRemovalInDarkMode) specificClasses = "dark:invert dark:hue-rotate-180";
+                    if (needsInvertInLightMode) specificClasses = "invert dark:invert-0";
+
+                    return (
+                    <div key={exp.id} className="relative pl-8 border-l-2 border-neutral-200 dark:border-neutral-800 group/timeline">
+                        <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-neutral-200 dark:bg-neutral-800 border-2 border-white dark:border-black" />
+
+                        {/* HOVER LOGO ON THE LEFT */}
+                        {exp.logo && (
+                            <div className="absolute top-0 right-full mr-6 w-32 h-10 md:w-40 md:h-16 opacity-0 group-hover/timeline:opacity-100 transition-all duration-300 pointer-events-none flex items-center justify-end -translate-x-4 group-hover/timeline:translate-x-0 hidden md:flex">
+                                <div className="relative w-full h-full">
+                                    <Image 
+                                        src={exp.logo} 
+                                        alt={`${exp.company} Logo`} 
+                                        fill 
+                                        unoptimized
+                                        className={`object-contain object-right ${specificClasses}`}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <h3 className="text-xl font-bold text-neutral-900 dark:text-white leading-tight">
+                                    {exp.position}
+                                </h3>
+                                <p className="text-lg font-medium text-primary">
+                                    {exp.company}
+                                </p>
+                            </div>
+                            <div className="flex flex-col sm:items-end gap-2">
                                 <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900 px-2 py-1 rounded w-fit">
-                                    {m.batch}
+                                    {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : 'Present'}
                                 </span>
-                            )}
-                            {m.gpa && (
-                                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded w-fit">
-                                    {m.gpa}
-                                </span>
-                            )}
+                            </div>
                         </div>
-                    )}
-                </div>
 
-                <p className="text-neutral-600 dark:text-neutral-300 mb-2 leading-relaxed text-sm md:text-base">
-                    {m.major}
-                </p>
+                        <p className="text-neutral-600 dark:text-neutral-300 mb-6 leading-relaxed text-sm md:text-base text-justify">
+                            {exp.description}
+                        </p>
 
-                <ul className="mb-6 space-y-3">
-                    {m.highlights.map((h, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs md:text-sm text-neutral-500 dark:text-neutral-400">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary/40 mt-1.5 shrink-0" />
-                            <span>{h}</span>
-                        </li>
-                    ))}
-                </ul>
+                        {exp.responsibilities && (
+                            <ul className="mb-8 space-y-3">
+                                {exp.responsibilities.slice(0, 3).map((resp, i) => (
+                                    <li key={i} className="flex items-start gap-2.5 text-xs md:text-sm text-neutral-500 dark:text-neutral-400 text-justify">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40 mt-1.5 shrink-0" />
+                                        <span>{resp}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
 
-                {m.image && (
-                    <div className="relative w-full max-w-md h-56 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-sm">
-                        <Image
-                            src={m.image}
-                            alt={m.institution}
-                            fill
-                            unoptimized
-                            className="object-cover"
+                        <div className="flex flex-wrap gap-2 mb-8">
+                            {exp.skills.map((skill, i) => (
+                                <span key={i} className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white transition-all duration-300 hover:-translate-y-0.5 cursor-default shadow-sm hover:shadow-md">
+                                    {skill}
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* Expandable Gallery Component */}
+                        <TimelineGallery
+                            images={exp.galleryImages || []}
+                            id={exp.id}
+                            title={exp.position}
+                            externalLink={exp.externalLink}
+                            logo={exp.logo}
                         />
                     </div>
-                )}
+                );
+                })}
             </div>
         )
     }));
